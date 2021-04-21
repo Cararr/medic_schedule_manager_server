@@ -1,0 +1,24 @@
+{
+	"name": "smbackend",
+	"version": "1.0.0",
+	"description": "",
+	"main": "server.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"start": "node compiled/server.js",
+		"nodemon": "nodemon source/server.ts",
+		"build": "tsc -p ."
+	},
+	"author": "Cararr",
+	"license": "MIT",
+	"dependencies": {
+		"express": "^4.17.1"
+	},
+	"devDependencies": {
+		"@types/node": "^14.14.37",
+		"@types/express": "^4.17.11",
+		"nodemon": "^2.0.7",
+		"ts-node": "^9.1.1",
+		"typescript": "^4.2.4"
+	}
+}
