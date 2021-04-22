@@ -1,0 +1,11 @@
+{
+	"name": "default",
+	"type": "postgres",
+	"host": "localhost",
+	"port": 4000,
+	"username": "root",
+	"password": "root",
+	"database": "MSM",
+	"entities": [],
+	"synchronize": true
+}
