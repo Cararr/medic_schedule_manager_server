@@ -1,25 +1,12 @@
-import { createExpressServer } from 'routing-controllers';
-import { createConnections } from 'typeorm';
-import * as config from './config.json';
-import {
-	Controller,
-	Param,
-	Body,
-	Get,
-	Post,
-	Put,
-	Delete,
-} from 'routing-controllers';
-@Controller()
-class testController {
-	@Get('/') testResponse() {
-		return '<h1>DUPCA</h1>';
-	}
-}
-createExpressServer({ controllers: [testController], cors: true }).listen(
-	config.port
-	/* 	() =>
-		createConnections()
-			.then(() => console.log(`Server listen on port: ${config.port}`))
-			.catch((error) => console.error(error)) */
-);
+import express from 'express';
+import cors from 'cors';
+import { schedulesRouter } from './source/rest/schedules/schedules';
+const app = express();
+const PORT = 4000 || process.env.port;
+app.use(express.json());
+app.use(cors());
+app.use(express.urlencoded({ extended: true }));
+
+app.use('/schedules', schedulesRouter);
+
+app.listen(PORT, () => console.log(`Server is listening on port ${PORT}`));
