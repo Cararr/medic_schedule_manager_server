@@ -1,5 +1,5 @@
 import { pool } from '../../pgconfig';
-import { employee } from '../../types/types';
+import { employee } from '../../typesDefs/types';
 
 export const loadEmployees: Promise<employee[]> = new Promise(
 	async (resolve, reject) => {

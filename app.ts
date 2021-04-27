@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
-import { schedulesRouter } from './source/rest/schedules/schedules';
-import { employeesRouter } from './source/rest/employees/employees';
+import { schedulesRouter } from './source/routes/schedules/schedules';
+import { employeesRouter } from './source/routes/employees/employeesRoutes';
 const app = express();
 const PORT = 4000 || process.env.port;
 app.use(express.json());
