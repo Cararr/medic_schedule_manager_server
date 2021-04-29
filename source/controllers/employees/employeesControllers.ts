@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { employee } from '../../../typesDefs/types';
-import { pool } from '../../../pgconfig';
+import { pool } from '../../../configs/pgconfig';
 export const getAllEmployeesController = async (
 	req: Request,
 	res: Response,
@@ -11,7 +11,7 @@ export const getAllEmployeesController = async (
 		const formatedResponse = formatEmployeesList(response.rows);
 		res.send(formatedResponse);
 	} catch (error) {
-		console.error(error);
+		next(error);
 	}
 };
 function formatEmployeesList(employeesList: employee[]): string[] {

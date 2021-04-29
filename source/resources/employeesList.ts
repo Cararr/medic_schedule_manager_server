@@ -1,4 +1,4 @@
-import { pool } from '../../pgconfig';
+import { pool } from '../../configs/pgconfig';
 import { employee } from '../../typesDefs/types';
 
 export const loadEmployees: Promise<employee[]> = new Promise(
