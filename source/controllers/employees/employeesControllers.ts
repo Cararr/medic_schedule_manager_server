@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { employee } from '../../../typesDefs/types';
+import { employee } from '../../../typeDefs/types';
 import { pool } from '../../../configs/pgconfig';
 export const getAllEmployeesController = async (
 	req: Request,

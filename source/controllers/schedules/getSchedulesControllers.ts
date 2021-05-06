@@ -1,10 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import { pool } from '../../../configs/pgconfig';
+import { returnQueryCellsByStationName } from '../../../util/utilities';
 import {
 	dbSearchIdListResults,
 	fullDailySchedule,
 	employee,
-} from '../../../typesDefs/types';
+} from '../../../typeDefs/types';
 import { loadEmployees } from '../../resources/employeesList';
 
 let employees: employee[];
@@ -24,25 +25,31 @@ export const getSchedulesByDate = async (
 	try {
 		const date: string = req.query.date.toString();
 		const kinezaSearchResults = await pool.query(
-			`SELECT CELL_1, CELL_2, CELL_3, CELL_4, CELL_5, CELL_6, CELL_7, CELL_8, CELL_9, CELL_10 FROM KINEZA JOIN SCHEDULES ON SCHEDULES.ID = KINEZA.SCHEDULE_ID WHERE date = $1;`,
+			`SELECT ${returnQueryCellsByStationName(
+				'kineza'
+			)} FROM KINEZA WHERE schedule_date = $1;`,
 			[date]
 		);
 		const fizykoSearchResults = await pool.query(
-			`SELECT CELL_1, CELL_2, CELL_3, CELL_4, CELL_5, CELL_6, CELL_7, CELL_8 FROM FIZYKO JOIN SCHEDULES ON SCHEDULES.ID = FIZYKO.SCHEDULE_ID WHERE date = $1;`,
+			`SELECT ${returnQueryCellsByStationName(
+				'fizyko'
+			)} FROM FIZYKO WHERE schedule_date = $1;`,
 			[date]
 		);
 		const masazSearchResults = await pool.query(
-			`SELECT CELL_1, CELL_2, CELL_3, CELL_4 FROM MASAZ JOIN SCHEDULES ON SCHEDULES.ID = MASAZ.SCHEDULE_ID WHERE date = $1;`,
+			`SELECT ${returnQueryCellsByStationName(
+				'masaz'
+			)} FROM MASAZ WHERE schedule_date = $1;`,
 			[date]
 		);
 		const kinezaSchedule = replaceIdsWithEmployees(
-			convertResonseObjectToArrayOfIds(kinezaSearchResults.rows[0])
+			convertResponseObjectToArrayOfIds(kinezaSearchResults.rows[0])
 		);
 		const fizykoSchedule = replaceIdsWithEmployees(
-			convertResonseObjectToArrayOfIds(fizykoSearchResults.rows[0])
+			convertResponseObjectToArrayOfIds(fizykoSearchResults.rows[0])
 		);
 		const masazSchedule = replaceIdsWithEmployees(
-			convertResonseObjectToArrayOfIds(masazSearchResults.rows[0])
+			convertResponseObjectToArrayOfIds(masazSearchResults.rows[0])
 		);
 		const fullDailyScheudle: fullDailySchedule = {
 			[date]: {
@@ -71,12 +78,12 @@ export const getSchedulesByStationAndDate = async (
 		const queryCells: string = returnQueryCellsByStationName(stationType);
 		const date: string = req.query.date.toString();
 		const dbResponse = await pool.query(
-			`SELECT ${queryCells} FROM ${stationType} JOIN SCHEDULES ON SCHEDULES.ID = ${stationType}.SCHEDULE_ID WHERE date = $1;`,
+			`SELECT ${queryCells} FROM ${stationType} WHERE schedule_date = $1;`,
 			[date]
 		);
 		const searchResults: dbSearchIdListResults = dbResponse.rows[0];
 
-		const schedule = convertResonseObjectToArrayOfIds(searchResults);
+		const schedule = convertResponseObjectToArrayOfIds(searchResults);
 
 		const namesSchedule: string[] = replaceIdsWithEmployees(schedule);
 		res.send(namesSchedule);
@@ -85,7 +92,7 @@ export const getSchedulesByStationAndDate = async (
 	}
 };
 
-function convertResonseObjectToArrayOfIds(
+function convertResponseObjectToArrayOfIds(
 	dbResponse: dbSearchIdListResults
 ): (number | null)[] {
 	const schedule: (number | null)[] = [];
@@ -102,17 +109,4 @@ function replaceIdsWithEmployees(idsList: (number | null)[]): string[] {
 		const employee = employees.find((employee) => employee.id === id);
 		return employee ? `${employee.name} ${employee.last_name}` : '';
 	});
-}
-
-function returnQueryCellsByStationName(station: string): string {
-	switch (station) {
-		case 'kineza':
-			return 'CELL_1, CELL_2, CELL_3, CELL_4, CELL_5, CELL_6, CELL_7, CELL_8, CELL_9, CELL_10';
-		case 'fizyko':
-			return 'CELL_1, CELL_2, CELL_3, CELL_4, CELL_5, CELL_6, CELL_7, CELL_8';
-		case 'masaz':
-			return 'CELL_1, CELL_2, CELL_3, CELL_4';
-		default:
-			return '';
-	}
 }
