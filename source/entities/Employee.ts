@@ -1,32 +1,33 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { HomeRehabilitation } from './HomeRehabilitation';
-import { ScheduleTableCell } from './ScheduleTableCell';
+import { ScheduleCell } from './ScheduleCell';
+import { Vacation } from './Vacation';
 
 @Entity()
 export class Employee {
 	@PrimaryGeneratedColumn('uuid')
-	public EmployeeId: string;
+	public id: string;
 
 	@Column({ length: 50 })
-	public FirstName: string;
+	public first_name: string;
 
 	@Column({ length: 100 })
-	public LastName: string;
+	public last_name: string;
 
-	@OneToMany(
-		() => ScheduleTableCell,
-		(scheduleTableCell) => scheduleTableCell.Employee
-	)
-	public ScheduleTableCells: ScheduleTableCell[];
+	@OneToMany(() => ScheduleCell, (scheduleCell) => scheduleCell.employee)
+	public schedule_cells: ScheduleCell[];
 
 	@OneToMany(
 		() => HomeRehabilitation,
-		(homeRehabilitation) => homeRehabilitation.Employee
+		(homeRehabilitation) => homeRehabilitation.employee
 	)
-	public HomeRehabilitations: HomeRehabilitation[];
+	public home_rehabilitations: HomeRehabilitation[];
 
-	constructor(FirstName: string, LastName: string) {
-		this.FirstName = FirstName;
-		this.LastName = LastName;
+	@OneToMany(() => Vacation, (vacation) => vacation.employee)
+	public vacations: Vacation[];
+
+	constructor(firstName: string, lastName: string) {
+		this.first_name = firstName;
+		this.last_name = lastName;
 	}
 }

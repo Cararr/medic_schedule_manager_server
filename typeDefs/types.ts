@@ -8,8 +8,3 @@ export interface fullDailySchedule {
 		MASAZ: string[];
 	};
 }
-export interface employee {
-	id: number;
-	name: string;
-	last_name: string;
-}

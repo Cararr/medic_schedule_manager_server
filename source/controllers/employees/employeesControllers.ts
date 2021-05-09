@@ -1,21 +1,18 @@
 import { Request, Response, NextFunction } from 'express';
-import { employee } from '../../../typeDefs/types';
-import { pool } from '../../../configs/pgconfig';
-export const getAllEmployeesController = async (
-	req: Request,
-	res: Response,
-	next: NextFunction
-) => {
-	try {
-		const response = await pool.query('SELECT * FROM employees;');
-		const formatedResponse = formatEmployeesList(response.rows);
-		res.send(formatedResponse);
-	} catch (error) {
-		next(error);
-	}
-};
-function formatEmployeesList(employeesList: employee[]): string[] {
-	return employeesList.map(
-		(employee) => `${employee.name} ${employee.last_name}`
-	);
+import { getRepository } from 'typeorm';
+import { Employee } from '../../entities/Employee';
+
+export class employeeController {
+	static getAllEmployeesController = async (
+		req: Request,
+		res: Response,
+		next: NextFunction
+	) => {
+		try {
+			const employees = await getRepository(Employee).find();
+			res.json(employees);
+		} catch (error) {
+			next(error);
+		}
+	};
 }

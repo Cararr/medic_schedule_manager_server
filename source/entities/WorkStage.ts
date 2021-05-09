@@ -5,39 +5,39 @@ import {
 	ManyToOne,
 	OneToMany,
 } from 'typeorm';
-import { WorkStagesHours } from './WorkStagesHours';
-import { ScheduleTableCell } from './ScheduleTableCell';
+import { WorkStageSpan } from './WorkStageSpan';
+import { ScheduleCell } from './ScheduleCell';
 
-@Entity()
+@Entity({ name: 'work_stage' })
 export class WorkStage {
 	@PrimaryGeneratedColumn()
-	public WorkStageId: number;
+	public id: number;
 
 	@Column()
-	public StationName: string;
+	public station_name: string;
 
 	@ManyToOne(
-		() => WorkStagesHours,
-		(workStageHours) => workStageHours.WorkStages
+		() => WorkStageSpan,
+		(workStageHours) => workStageHours.work_stages
 	)
-	public WorkStagesHours: WorkStagesHours;
+	public work_stage_span: WorkStageSpan;
 
 	@Column()
-	public EmployeeSlots: number;
+	public employee_slots: number;
 
 	@OneToMany(
-		() => ScheduleTableCell,
-		(scheduleTableCell) => scheduleTableCell.WorkStage
+		() => ScheduleCell,
+		(scheduleTableCell) => scheduleTableCell.work_stage
 	)
-	public ScheduleTableCells: ScheduleTableCell[];
+	public schedule_cells: ScheduleCell[];
 
 	constructor(
-		StationName: string,
-		WorkStagesHours: WorkStagesHours,
-		EmployeeSlots: number
+		stationName: string,
+		workStagesHours: WorkStageSpan,
+		employeeSlots: number
 	) {
-		this.StationName = StationName;
-		this.WorkStagesHours = WorkStagesHours;
-		this.EmployeeSlots = EmployeeSlots;
+		this.station_name = stationName;
+		this.work_stage_span = workStagesHours;
+		this.employee_slots = employeeSlots;
 	}
 }

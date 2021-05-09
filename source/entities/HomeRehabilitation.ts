@@ -1,32 +1,32 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 import { Employee } from './Employee';
 
-@Entity()
+@Entity({ name: 'home_rehabilitaiton' })
 export class HomeRehabilitation {
 	@PrimaryGeneratedColumn()
-	public HomeRehabilitationId: number;
+	public id: number;
 
-	@ManyToOne(() => Employee, (employee) => employee.HomeRehabilitations)
-	public Employee: Employee;
+	@ManyToOne(() => Employee, (employee) => employee.home_rehabilitations)
+	public employee: Employee;
 
 	@Column({ length: 250 })
-	public Patient: string;
+	public patient: string;
 
 	@Column()
-	public Date: string;
+	public date: string;
 
 	@Column()
-	public StartTime: string;
+	public start_time: string;
 
 	constructor(
-		Employee: Employee,
-		Patient: string,
-		Date: string,
-		StartTime: string
+		employee: Employee,
+		patient: string,
+		date: string,
+		startTime: string
 	) {
-		this.Employee = Employee;
-		this.Patient = Patient;
-		this.Date = Date;
-		this.StartTime = StartTime;
+		this.employee = employee;
+		this.patient = patient;
+		this.date = date;
+		this.start_time = startTime;
 	}
 }
