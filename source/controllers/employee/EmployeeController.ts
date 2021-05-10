@@ -2,8 +2,8 @@ import { Request, Response, NextFunction } from 'express';
 import { getRepository } from 'typeorm';
 import { Employee } from '../../entities/Employee';
 
-export class employeeController {
-	static getAllEmployeesController = async (
+export class EmployeeController {
+	static getAllEmployees = async (
 		req: Request,
 		res: Response,
 		next: NextFunction

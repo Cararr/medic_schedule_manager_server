@@ -1,10 +1,8 @@
-export interface dbSearchIdListResults {
-	[cell: string]: number | null;
-}
-export interface fullDailySchedule {
+import { Employee } from '../source/entities/Employee';
+export interface dailySchedule {
 	[date: string]: {
-		KINEZA: string[];
-		FIZYKO: string[];
-		MASAZ: string[];
+		KINEZA: Employee[];
+		FIZYKO: Employee[];
+		MASAZ: Employee[];
 	};
 }

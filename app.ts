@@ -3,8 +3,9 @@ import morgan from 'morgan';
 import { createConnection } from 'typeorm';
 import { createExpressServer } from 'routing-controllers';
 import { logger } from './source/infrastructure/logger';
-import { schedulesRouter } from './source/routes/schedules';
-import { employeesRouter } from './source/routes/employeesRoutes';
+import { employeesRouter } from './source/routes/employeesRouter';
+import { workStageSpanRouter } from './source/routes/workStageSpansRouter';
+import { schedulesRouter } from './source/routes/schedulesRouter';
 import { PORT } from './configs/config.json';
 const server = createExpressServer({
 	// controllers:[],
@@ -14,8 +15,7 @@ const server = createExpressServer({
 server.use(express.json());
 server.use(morgan('dev'));
 
-// server.use('/schedules', schedulesRouter);
-server.use('/employees', employeesRouter);
+server.use(employeesRouter, workStageSpanRouter, schedulesRouter);
 
 server.listen(PORT, () => {
 	createConnection()
