@@ -9,7 +9,9 @@ export class Vacation {
 	@Column()
 	public date: string;
 
-	@ManyToOne(() => Employee, (employee) => employee.vacations)
+	@ManyToOne(() => Employee, (employee) => employee.vacations, {
+		nullable: false,
+	})
 	public employee: Employee;
 
 	constructor(date: string, employee: Employee) {

@@ -1,7 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
-import { WorkStage } from './WorkStage';
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity({ name: 'work_stage_span' })
+@Entity()
 export class WorkStageSpan {
 	@PrimaryGeneratedColumn()
 	public id: number;
@@ -11,9 +10,6 @@ export class WorkStageSpan {
 
 	@Column()
 	public to: string;
-
-	@OneToMany(() => WorkStage, (workStage) => workStage.work_stage_span)
-	public work_stages: WorkStage[];
 
 	constructor(from: string, to: string) {
 		this.from = from;

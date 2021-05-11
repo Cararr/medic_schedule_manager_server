@@ -1,12 +1,14 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 import { Employee } from './Employee';
 
-@Entity({ name: 'home_rehabilitaiton' })
+@Entity()
 export class HomeRehabilitation {
 	@PrimaryGeneratedColumn()
 	public id: number;
 
-	@ManyToOne(() => Employee, (employee) => employee.home_rehabilitations)
+	@ManyToOne(() => Employee, (employee) => employee.homeRehabilitaitons, {
+		nullable: false,
+	})
 	public employee: Employee;
 
 	@Column({ length: 250 })
@@ -16,7 +18,7 @@ export class HomeRehabilitation {
 	public date: string;
 
 	@Column()
-	public start_time: string;
+	public startTime: string;
 
 	constructor(
 		employee: Employee,
@@ -27,6 +29,6 @@ export class HomeRehabilitation {
 		this.employee = employee;
 		this.patient = patient;
 		this.date = date;
-		this.start_time = startTime;
+		this.startTime = startTime;
 	}
 }
