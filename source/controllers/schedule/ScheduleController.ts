@@ -16,7 +16,7 @@ export class ScheduleController {
 			if (typeof date === 'string') {
 				const response = await getRepository(ScheduleTable).find({
 					relations: ['station', ...returnEmployeeCellNames()],
-					where: { date: date },
+					where: { date },
 				});
 
 				const completeDailySchedule: dailySchedule = { [date]: {} };
@@ -91,9 +91,20 @@ export class ScheduleController {
 					station: stationEntity,
 					...employeeCells,
 				});
-				schedulesToSave.push(newSchedule);
+
+				let updatedSchedule: ScheduleTable;
+				if (req.body.currentSchedulesPerDate.length) {
+					const oldSchedule = req.body.currentSchedulesPerDate.find(
+						(sched: ScheduleTable) => sched.station.name === stationName
+					);
+					const id = scheduleRepository.getId(oldSchedule);
+					newSchedule.id = id;
+					updatedSchedule = await scheduleRepository.preload(newSchedule);
+				}
+				schedulesToSave.push(updatedSchedule || newSchedule);
 			}
 		}
+
 		const response = await scheduleRepository.save(schedulesToSave);
 		res.send(response);
 	};
@@ -128,11 +139,6 @@ export class ScheduleController {
 			relations: ['station', ...returnEmployeeCellNames()],
 			where: { date },
 		});
-
-		if (currentSchedulesPerDate.length)
-			return res
-				.status(400)
-				.send('There is a schedule in the database for a given date.');
 
 		req.body.currentSchedulesPerDate = currentSchedulesPerDate;
 		req.body.date = date;
