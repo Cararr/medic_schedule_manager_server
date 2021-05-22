@@ -4,9 +4,9 @@ import { createConnection, getConnectionOptions } from 'typeorm';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { createExpressServer } from 'routing-controllers';
 import { logger } from './source/infrastructure/logger';
-import { employeesRouter } from './source/routes/employeesRouter';
-import { workStageSpanRouter } from './source/routes/workStageSpansRouter';
-import { schedulesRouter } from './source/routes/schedulesRouter';
+import { employeesRouter } from './source/application/routes/employeesRouter';
+import { workStageSpanRouter } from './source/application/routes/workStageSpansRouter';
+import { schedulesRouter } from './source/application/routes/schedulesRouter';
 import { PORT } from './configs/config.json';
 const server = createExpressServer({
 	// controllers:[],

@@ -1,5 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
-import { ScheduleTable } from './ScheduleTable';
+import { ScheduleCell } from './ScheduleCell';
 
 @Entity()
 export class Station {
@@ -12,8 +12,8 @@ export class Station {
 	@Column()
 	public numberOfCellsInTable: number;
 
-	@OneToMany(() => ScheduleTable, (scheduleTable) => scheduleTable.station)
-	public scheduleTables: ScheduleTable[];
+	@OneToMany(() => ScheduleCell, (scheduleTable) => scheduleTable.station)
+	public scheduleTables: ScheduleCell[];
 
 	constructor(name: string, numberOfCellsInTable: number) {
 		this.name = name;

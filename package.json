@@ -6,8 +6,11 @@
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"start": "node dist/app.js",
-		"nodemon": "nodemon app.ts",
-		"build": "tsc -p ."
+		"nodemon": "nodemon dist/app.js",
+		"build": "tsc -p .",
+		"watch": "tsc -w -p .",
+		"pm2": "pm2-dev start dist/app.js",
+		"kill": "pm2 delete default"
 	},
 	"author": "Cararr",
 	"license": "MIT",

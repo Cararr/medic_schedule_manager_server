@@ -1,6 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { HomeRehabilitation } from './HomeRehabilitation';
 import { Vacation } from './Vacation';
+import { ScheduleCell } from './ScheduleCell';
 
 @Entity()
 export class Employee {
@@ -21,6 +22,9 @@ export class Employee {
 
 	@OneToMany(() => Vacation, (vacation) => vacation.employee)
 	public vacations: Vacation[];
+
+	@OneToMany(() => ScheduleCell, (scheduleCell) => scheduleCell.cellEmployee)
+	public scheduleCells: ScheduleCell[];
 
 	constructor(firstName: string, lastName: string) {
 		this.firstName = firstName;

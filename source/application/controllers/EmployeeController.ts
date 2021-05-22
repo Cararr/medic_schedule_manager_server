@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { getRepository } from 'typeorm';
-import { Employee } from '../../entities/Employee';
+import { Employee } from '../../domain/entities/Employee';
 
 export class EmployeeController {
 	static getAllEmployees = async (
