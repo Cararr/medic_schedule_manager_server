@@ -23,7 +23,7 @@ export class Employee {
 	@OneToMany(() => Vacation, (vacation) => vacation.employee)
 	public vacations: Vacation[];
 
-	@OneToMany(() => ScheduleCell, (scheduleCell) => scheduleCell.cellEmployee)
+	@OneToMany(() => ScheduleCell, (scheduleCell) => scheduleCell.cellValue)
 	public scheduleCells: ScheduleCell[];
 
 	constructor(firstName: string, lastName: string) {

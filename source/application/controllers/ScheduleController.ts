@@ -1,8 +1,9 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction, response } from 'express';
 import { getRepository } from 'typeorm';
 import { ScheduleCell } from '../../domain/entities/ScheduleCell';
 import { Station } from '../../domain/entities/Station';
 import { Employee } from '../../domain/entities/Employee';
+import { scheduleGenerator } from '../../domain/scheduleGenerator/scheduleGenerator';
 import { dailySchedule } from '../../../typeDefs/types';
 
 export class ScheduleController {
@@ -86,6 +87,17 @@ export class ScheduleController {
 		res.send(response);
 	};
 
+	static generateScheudle = async (
+		req: Request,
+		res: Response,
+		next: NextFunction
+	) => {
+		try {
+			res.send(scheduleGenerator(req.body.employees, req.body.stations));
+		} catch (error) {
+			next(error);
+		}
+	};
 	static loadStationsAndEmployees = async (
 		req: Request,
 		res: Response,

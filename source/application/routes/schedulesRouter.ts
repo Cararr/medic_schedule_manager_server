@@ -14,3 +14,9 @@ schedulesRouter.post(
 	ScheduleController.reqBodyVeryfier,
 	ScheduleController.saveSchedule
 );
+
+schedulesRouter.get(
+	'/schedule/generate',
+	ScheduleController.loadStationsAndEmployees,
+	ScheduleController.generateScheudle
+);
