@@ -14,6 +14,9 @@ export class Employee {
 	@Column({ length: 100 })
 	public lastName: string;
 
+	@Column({ select: false })
+	public password: string;
+
 	@OneToMany(
 		() => HomeRehabilitation,
 		(homeRehabilitation) => homeRehabilitation.employee
@@ -23,11 +26,12 @@ export class Employee {
 	@OneToMany(() => Vacation, (vacation) => vacation.employee)
 	public vacations: Vacation[];
 
-	@OneToMany(() => ScheduleCell, (scheduleCell) => scheduleCell.cellValue)
+	@OneToMany(() => ScheduleCell, (scheduleCell) => scheduleCell.employeeAtCell)
 	public scheduleCells: ScheduleCell[];
 
-	constructor(firstName: string, lastName: string) {
+	constructor(firstName: string, lastName: string, password: string) {
 		this.firstName = firstName;
 		this.lastName = lastName;
+		this.password = password;
 	}
 }

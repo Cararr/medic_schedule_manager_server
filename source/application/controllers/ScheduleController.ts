@@ -16,7 +16,7 @@ export class ScheduleController {
 			const date = req.query.date;
 			if (typeof date === 'string' && validateDateString(date)) {
 				const response = await getRepository(ScheduleCell).find({
-					relations: ['station', 'cellValue'],
+					relations: ['station', 'employeeAtCell'],
 					where: { date },
 				});
 
@@ -33,7 +33,7 @@ export class ScheduleController {
 				if (response.length) {
 					response.forEach((tableCell: ScheduleCell) => {
 						const stationName = tableCell.station.name;
-						const employeeInCell = tableCell.cellValue;
+						const employeeInCell = tableCell.employeeAtCell;
 						const indexOfCell = tableCell.orderInTable;
 						completeDailySchedule[date][stationName][indexOfCell] =
 							employeeInCell;
@@ -70,7 +70,7 @@ export class ScheduleController {
 					const newCell = scheduleCellsRepository.create({
 						date: req.body.date,
 						station: stationEntity,
-						cellValue: reqCell,
+						employeeAtCell: reqCell,
 						orderInTable: index,
 					});
 
@@ -125,7 +125,7 @@ export class ScheduleController {
 
 		const scheduleCellsRepository = getRepository(ScheduleCell);
 		const currentCellsPerDate = await scheduleCellsRepository.find({
-			relations: ['station', 'cellValue'],
+			relations: ['station', 'employeeAtCell'],
 			where: { date },
 		});
 

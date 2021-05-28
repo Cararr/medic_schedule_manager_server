@@ -30,7 +30,5 @@ export const scheduleGenerator = (
 			array[index] = randomEmployee;
 		});
 	}
-	console.log(employeesCounter);
-
 	return schedule;
 };

@@ -19,17 +19,17 @@ export class ScheduleCell {
 	public station: Station;
 
 	@ManyToOne(() => Employee, (employee) => employee.scheduleCells)
-	public cellValue: Employee;
+	public employeeAtCell: Employee;
 
 	constructor(
 		date: string,
 		station: Station,
 		order: number,
-		cellValue: Employee = null
+		employeeAtCell: Employee = null
 	) {
 		this.date = date;
 		this.orderInTable = order;
 		this.station = station;
-		this.cellValue = cellValue;
+		this.employeeAtCell = employeeAtCell;
 	}
 }
