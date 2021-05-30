@@ -4,7 +4,7 @@ import { ScheduleCell } from '../../domain/entities/ScheduleCell';
 import { Station } from '../../domain/entities/Station';
 import { Employee } from '../../domain/entities/Employee';
 import { scheduleGenerator } from '../../domain/scheduleGenerator/scheduleGenerator';
-import { dailySchedule } from '../../../typeDefs/types';
+import { dailyDateSchedule } from '../../../typeDefs/types';
 
 export class ScheduleController {
 	static getScheduleByDate = async (
@@ -20,7 +20,7 @@ export class ScheduleController {
 					where: { date },
 				});
 
-				const completeDailySchedule: dailySchedule = { [date]: {} };
+				const completeDailySchedule: dailyDateSchedule = { [date]: {} };
 
 				// if there are no schedule for given data controller should send back null arrays for each station
 

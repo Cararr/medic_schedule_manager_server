@@ -11,7 +11,7 @@ export class Employee {
 	@Column({ length: 50 })
 	public firstName: string;
 
-	@Column({ length: 100 })
+	@Column({ length: 100 /* unique: true  */ })
 	public lastName: string;
 
 	@Column({ select: false })

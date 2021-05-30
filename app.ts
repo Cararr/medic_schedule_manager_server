@@ -7,6 +7,7 @@ import { logger } from './source/infrastructure/logger';
 import { employeesRouter } from './source/application/routes/employeesRouter';
 import { workStageSpanRouter } from './source/application/routes/workStageSpansRouter';
 import { schedulesRouter } from './source/application/routes/schedulesRouter';
+import { authorizationRouter } from './source/application/routes/authorizationRouter';
 import { PORT } from './configs/config.json';
 const server = createExpressServer({
 	// controllers:[],
@@ -16,7 +17,12 @@ const server = createExpressServer({
 server.use(express.json());
 server.use(morgan('dev'));
 
-server.use(employeesRouter, workStageSpanRouter, schedulesRouter);
+server.use(
+	employeesRouter,
+	workStageSpanRouter,
+	schedulesRouter,
+	authorizationRouter
+);
 
 server.listen(PORT, async () => {
 	const connectionOptions = await getConnectionOptions();

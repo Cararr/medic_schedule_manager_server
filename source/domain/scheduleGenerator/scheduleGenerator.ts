@@ -6,8 +6,8 @@ import { dailySchedule } from '../../../typeDefs/types';
 export const scheduleGenerator = (
 	employeesList: Employee[],
 	stations: Station[]
-): { [station: string]: (Employee | null)[] } => {
-	const schedule: { [station: string]: (Employee | null)[] } = {};
+): dailySchedule => {
+	const schedule: dailySchedule = {};
 	const employees = [...employeesList];
 	const employeesCounter: Map<Employee, { counter: number }> = new Map();
 	for (const employee of employees) {
