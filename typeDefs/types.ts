@@ -7,7 +7,11 @@ export interface dailyDateSchedule {
 export interface dailySchedule {
 	[station: string]: (Employee | null)[];
 }
+export enum employeeRole {
+	BOSS = 'BOSS',
+	EMPLOYEE = 'EMPLOYEE',
+}
 export interface user {
-	lastName: string;
-	password: string;
+	id: string;
+	role: employeeRole;
 }

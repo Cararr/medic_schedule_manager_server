@@ -4,7 +4,7 @@ import { ScheduleCell } from '../../domain/entities/ScheduleCell';
 import { Station } from '../../domain/entities/Station';
 import { Employee } from '../../domain/entities/Employee';
 import { scheduleGenerator } from '../../domain/scheduleGenerator/scheduleGenerator';
-import { dailyDateSchedule } from '../../../typeDefs/types';
+import { dailyDateSchedule, employeeRole } from '../../../typeDefs/types';
 
 export class ScheduleController {
 	static getScheduleByDate = async (
@@ -51,6 +51,9 @@ export class ScheduleController {
 		res: Response,
 		next: NextFunction
 	) => {
+		if (req.body.token.employeeRole !== employeeRole.BOSS)
+			return res.status(403).send({ message: 'Unauthorized.' });
+
 		const scheduleCellsRepository = getRepository(ScheduleCell);
 		const cellsToSave: ScheduleCell[] = [];
 
@@ -119,29 +122,42 @@ export class ScheduleController {
 		res: Response,
 		next: NextFunction
 	) => {
-		// Still need to check if arrays contains Employee or nulls...
 		const date = Object.keys(req.body)[0];
-		if (!validateDateString(date)) return res.status(400).send('Invalid date.');
+		if (!validateDateString(date))
+			return res.status(400).send({ message: 'Invalid date.' });
+		req.body.date = date;
 
 		const scheduleCellsRepository = getRepository(ScheduleCell);
 		const currentCellsPerDate = await scheduleCellsRepository.find({
 			relations: ['station', 'employeeAtCell'],
 			where: { date },
 		});
-
 		req.body.currentCellsPerDate = currentCellsPerDate;
-		req.body.date = date;
+
 		req.body.schedules = req.body[date];
 
 		for (const stationName of Object.keys(req.body.schedules)) {
 			const station = req.body.stations.find(
 				(station: Station) => station.name === stationName
 			);
-			if (!station) return res.status(400).send('Wrong staiton names.');
-			const stationSchedule: (Employee | null)[] =
+			if (!station)
+				return res.status(400).send({ message: 'Wrong station names.' });
+
+			const cellsAtStaiton: (Employee | null)[] =
 				req.body.schedules[stationName];
-			if (stationSchedule.length !== station.numberOfCellsInTable)
-				return res.status(400).send('Wrong arrays format.');
+			for (const cellValue of cellsAtStaiton) {
+				if (
+					cellValue !== null &&
+					!req.body.employees.some((emp: Employee) => emp.id === cellValue.id)
+				)
+					return res.status(400).send({
+						message:
+							'Wrong schedules values. Accept null or employee object with valid id',
+					});
+			}
+
+			if (cellsAtStaiton.length !== station.numberOfCellsInTable)
+				return res.status(400).send({ message: 'Wrong arrays length.' });
 		}
 		next();
 	};

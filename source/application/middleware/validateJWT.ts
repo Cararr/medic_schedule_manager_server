@@ -18,7 +18,8 @@ const validateToken = async (
 				});
 			else {
 				res.locals.token = decoded;
-				res.send({ message: 'Authorized' });
+				req.body.token = decoded;
+				next();
 			}
 		});
 	} else {

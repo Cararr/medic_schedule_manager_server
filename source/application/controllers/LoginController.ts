@@ -3,6 +3,7 @@ import { getRepository } from 'typeorm';
 import { Employee } from '../../domain/entities/Employee';
 import bcrypt from 'bcryptjs';
 import createJWT from '../../../util/createJWT';
+import { user } from '../../../typeDefs/types';
 
 export class LoginController {
 	static login = async (req: Request, res: Response, next: NextFunction) => {
@@ -10,7 +11,7 @@ export class LoginController {
 			const { lastName, password } = req.body;
 
 			const employee = await getRepository(Employee).findOne({
-				select: ['lastName', 'password', 'id'],
+				select: ['lastName', 'password', 'id', 'role'],
 				where: { lastName: lastName },
 			});
 
@@ -19,16 +20,20 @@ export class LoginController {
 
 			const match = await bcrypt.compare(password, employee.password);
 
+			const employeeUser: user = {
+				id: employee.id,
+				role: employee.role,
+			};
+
 			if (match) {
-				createJWT(employee, (error, token) => {
+				createJWT(employeeUser, (error, token) => {
 					if (error) next(error);
 					else if (token) {
-						delete employee.password;
-						return res.json({ message: 'Login passed.', token, employee });
+						return res.json({ message: 'Login passed.', token, employeeUser });
 					}
 				});
 			} else {
-				res.status(401).json({ message: 'Unauthorized.' });
+				res.status(401).json({ message: 'Wrong password.' });
 			}
 		} catch (error) {
 			next(error);

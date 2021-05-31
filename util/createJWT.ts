@@ -12,7 +12,7 @@ const createJWT = (
 ): void => {
 	try {
 		jwt.sign(
-			{ lastName: user.lastName },
+			{ employeeId: user.id, employeeRole: user.role },
 			TOKEN_SECRET,
 			{
 				issuer: TOKEN_ISSUER,

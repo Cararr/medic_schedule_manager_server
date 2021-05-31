@@ -1,0 +1,6 @@
+{
+	"PORT": 4000,
+	"TOKEN_EXPIRE_TIME": "24h",
+	"TOKEN_ISSUER": "MedicScheduleManager",
+	"TOKEN_SECRET": "dupa"
+}

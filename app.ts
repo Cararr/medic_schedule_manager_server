@@ -7,7 +7,8 @@ import { logger } from './source/infrastructure/logger';
 import { employeesRouter } from './source/application/routes/employeesRouter';
 import { workStageSpanRouter } from './source/application/routes/workStageSpansRouter';
 import { schedulesRouter } from './source/application/routes/schedulesRouter';
-import { authorizationRouter } from './source/application/routes/authorizationRouter';
+import { loginRouter } from './source/application/routes/loginRouter';
+import validateToken from './source/application/middleware/validateJWT';
 import { PORT } from './configs/config.json';
 const server = createExpressServer({
 	// controllers:[],
@@ -18,10 +19,11 @@ server.use(express.json());
 server.use(morgan('dev'));
 
 server.use(
+	loginRouter,
+	validateToken,
 	employeesRouter,
 	workStageSpanRouter,
-	schedulesRouter,
-	authorizationRouter
+	schedulesRouter
 );
 
 server.listen(PORT, async () => {
