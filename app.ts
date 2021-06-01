@@ -1,5 +1,6 @@
 import express from 'express';
 import morgan from 'morgan';
+import cookieParser from 'cookie-parser';
 import { createConnection, getConnectionOptions } from 'typeorm';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { createExpressServer } from 'routing-controllers';
@@ -15,8 +16,7 @@ const server = createExpressServer({
 	cors: true,
 });
 
-server.use(express.json());
-server.use(morgan('dev'));
+server.use(express.json(), morgan('dev'), cookieParser());
 
 server.use(
 	loginRouter,

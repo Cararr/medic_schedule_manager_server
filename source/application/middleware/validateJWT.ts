@@ -7,7 +7,7 @@ const validateToken = async (
 	res: Response,
 	next: NextFunction
 ) => {
-	const token = req.headers.authorization?.split(' ')[1];
+	const token: string = req.cookies.token;
 
 	if (token) {
 		jwt.verify(token, TOKEN_SECRET, (error, decoded) => {
@@ -17,8 +17,7 @@ const validateToken = async (
 					error,
 				});
 			else {
-				res.locals.token = decoded;
-				req.body.token = decoded;
+				req.body.tokenDecoded = decoded;
 				next();
 			}
 		});

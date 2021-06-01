@@ -29,6 +29,7 @@ export class LoginController {
 				createJWT(employeeUser, (error, token) => {
 					if (error) next(error);
 					else if (token) {
+						res.cookie('token', token, { httpOnly: true });
 						return res.json({ message: 'Login passed.', token, employeeUser });
 					}
 				});

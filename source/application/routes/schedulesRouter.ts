@@ -11,9 +11,11 @@ schedulesRouter.get(
 schedulesRouter.post(
 	'/schedule',
 	ScheduleController.loadStationsAndEmployees,
-	ScheduleController.reqBodyVeryfier,
+	ScheduleController.saveScheduleReqVeryfier,
 	ScheduleController.saveSchedule
 );
+
+schedulesRouter.delete('/schedule', ScheduleController.deleteScheduleByDate);
 
 schedulesRouter.get(
 	'/schedule/generate',
