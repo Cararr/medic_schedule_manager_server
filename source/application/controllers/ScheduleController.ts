@@ -134,7 +134,7 @@ export class ScheduleController {
 			if (!isEmployeeBoss(userRole))
 				return res.status(403).send({ message: 'Unauthorized.' });
 
-			const date = req.query.date;
+			const date = req.params.date;
 			if (typeof date !== 'string' || !validateDateFormat(date))
 				return res.status(400).send({ message: 'Wrong date format.' });
 
@@ -159,7 +159,7 @@ export class ScheduleController {
 		res: Response,
 		next: NextFunction
 	) => {
-		const date = Object.keys(req.body)[0];
+		const date = req.params.date;
 		if (!validateDateFormat(date))
 			return res.status(400).send({ message: 'Invalid date.' });
 		req.body.date = date;
@@ -171,8 +171,7 @@ export class ScheduleController {
 		});
 		req.body.currentCellsPerDate = currentCellsPerDate;
 
-		req.body.schedules = req.body[date];
-
+		req.body.schedules = req.body.schedules;
 		for (const stationName of Object.keys(req.body.schedules)) {
 			const station = req.body.stations.find(
 				(station: Station) => station.name === stationName

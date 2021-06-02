@@ -8,14 +8,17 @@ schedulesRouter.get(
 	ScheduleController.getScheduleByDate
 );
 
-schedulesRouter.post(
-	'/schedule',
+schedulesRouter.put(
+	'/schedule/:date',
 	ScheduleController.loadStationsAndEmployees,
 	ScheduleController.saveScheduleReqVeryfier,
 	ScheduleController.saveSchedule
 );
 
-schedulesRouter.delete('/schedule', ScheduleController.deleteScheduleByDate);
+schedulesRouter.delete(
+	'/schedule/:date',
+	ScheduleController.deleteScheduleByDate
+);
 
 schedulesRouter.get(
 	'/schedule/generate',
