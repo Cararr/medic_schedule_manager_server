@@ -16,7 +16,7 @@ export class LoginController {
 			});
 
 			if (!employee)
-				return res.status(404).json({ message: 'Employee not found.' });
+				return res.status(401).send({ message: 'Employee not found.' });
 
 			const match = await bcrypt.compare(password, employee.password);
 
@@ -32,14 +32,23 @@ export class LoginController {
 						res.cookie('token', token, { httpOnly: true });
 						return res
 							.status(201)
-							.json({ message: 'Login passed.', employeeUser });
+							.send({ message: 'Login passed.', employeeUser });
 					}
 				});
 			} else {
-				res.status(401).json({ message: 'Wrong password.' });
+				res.status(401).send({ message: 'Wrong password.' });
 			}
 		} catch (error) {
 			next(error);
 		}
+	};
+
+	static loginBodyVeryfier = (
+		req: Request,
+		res: Response,
+		next: NextFunction
+	) => {
+		if (req.body.lastName && req.body.password) next();
+		else res.status(400).send({ message: 'Missing employee crudentials.' });
 	};
 }

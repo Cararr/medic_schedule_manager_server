@@ -6,6 +6,7 @@ import { Employee } from '../../domain/entities/Employee';
 import { scheduleGenerator } from '../../domain/scheduleGenerator/scheduleGenerator';
 import { validateDateFormat } from '../../../util/utilities';
 import { dailyDateSchedule, employeeRole } from '../../../typeDefs/types';
+import { ForbiddenError, Authorized } from 'routing-controllers';
 
 export class ScheduleController {
 	static getScheduleByDate = async (
@@ -56,7 +57,7 @@ export class ScheduleController {
 		try {
 			const userRole = req.body.tokenDecoded.employeeRole;
 			if (!isEmployeeBoss(userRole))
-				return res.status(403).send({ message: 'Unauthorized.' });
+				return res.status(403).send(new ForbiddenError());
 
 			const scheduleCellsRepository = getRepository(ScheduleCell);
 			const cellsToSave: ScheduleCell[] = [];
@@ -132,7 +133,7 @@ export class ScheduleController {
 		try {
 			const userRole = req.body.tokenDecoded.employeeRole;
 			if (!isEmployeeBoss(userRole))
-				return res.status(403).send({ message: 'Unauthorized.' });
+				return res.status(403).send(new ForbiddenError());
 
 			const date = req.params.date;
 			if (typeof date !== 'string' || !validateDateFormat(date))
@@ -199,6 +200,5 @@ export class ScheduleController {
 	};
 }
 
-function isEmployeeBoss(role: employeeRole): boolean {
-	return role === employeeRole.BOSS;
-}
+const isEmployeeBoss = (role: employeeRole): boolean =>
+	role === employeeRole.BOSS;

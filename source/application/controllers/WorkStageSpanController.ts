@@ -9,8 +9,6 @@ export class WorkStageSpanController {
 		next: NextFunction
 	) => {
 		try {
-			console.log(req.cookies);
-
 			const stageSpans = await getRepository(WorkStageSpan).find();
 			res.json(stageSpans);
 		} catch (error) {

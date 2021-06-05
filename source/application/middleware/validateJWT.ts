@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { TOKEN_SECRET } from '../../../configs/config.json';
+import { UnauthorizedError } from 'routing-controllers';
 
 const validateToken = async (
 	req: Request,
@@ -22,7 +23,7 @@ const validateToken = async (
 			}
 		});
 	} else {
-		return res.status(401).json({ message: 'Authorization failed.' });
+		return res.status(401).json(new UnauthorizedError());
 	}
 };
 
