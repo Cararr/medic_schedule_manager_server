@@ -11,7 +11,3 @@ export enum employeeRole {
 	BOSS = 'BOSS',
 	EMPLOYEE = 'EMPLOYEE',
 }
-export interface user {
-	id: string;
-	role: employeeRole;
-}

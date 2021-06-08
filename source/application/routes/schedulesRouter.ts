@@ -4,14 +4,14 @@ export const schedulesRouter = express.Router();
 import validateToken from '../middleware/validateJWT';
 
 schedulesRouter.get(
-	'/schedule',
+	'/schedules',
 	validateToken,
 	ScheduleController.loadStationsAndEmployees,
 	ScheduleController.getScheduleByDate
 );
 
 schedulesRouter.put(
-	'/schedule/:date',
+	'/schedules/:date',
 	validateToken,
 	ScheduleController.loadStationsAndEmployees,
 	ScheduleController.saveScheduleReqVeryfier,
@@ -19,13 +19,13 @@ schedulesRouter.put(
 );
 
 schedulesRouter.delete(
-	'/schedule/:date',
+	'/schedules/:date',
 	validateToken,
 	ScheduleController.deleteScheduleByDate
 );
 
 schedulesRouter.get(
-	'/schedule/generate',
+	'/schedules/generate',
 	validateToken,
 	ScheduleController.loadStationsAndEmployees,
 	ScheduleController.generateScheudle

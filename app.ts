@@ -18,6 +18,7 @@ const server = createExpressServer({
 server.use(express.json(), morgan('dev'), cookieParser());
 
 server.use(
+	'/api',
 	loginRouter,
 	employeesRouter,
 	workStageSpanRouter,

@@ -1,38 +1,42 @@
 import { Request, Response, NextFunction } from 'express';
 import { getRepository } from 'typeorm';
 import { Employee } from '../../domain/entities/Employee';
+import { TOKEN_EXPIRE_TIME } from '../../../configs/config.json';
 import bcrypt from 'bcryptjs';
 import createJWT from '../../../util/createJWT';
-import { user } from '../../../typeDefs/types';
 
 export class LoginController {
 	static login = async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { lastName, password } = req.body;
 
-			const employee = await getRepository(Employee).findOne({
-				select: ['lastName', 'password', 'id', 'role'],
+			const user = await getRepository(Employee).findOne({
+				select: ['firstName', 'lastName', 'password', 'id', 'role'],
 				where: { lastName: lastName },
 			});
 
-			if (!employee)
+			if (!user)
 				return res.status(401).send({ message: 'Employee not found.' });
 
-			const match = await bcrypt.compare(password, employee.password);
-
-			const employeeUser: user = {
-				id: employee.id,
-				role: employee.role,
-			};
+			const match = await bcrypt.compare(password, user.password);
 
 			if (match) {
-				createJWT(employeeUser, (error, token) => {
+				delete user.password;
+				createJWT(user, (error, token) => {
 					if (error) next(error);
 					else if (token) {
-						res.cookie('token', token, { httpOnly: true });
-						return res
-							.status(201)
-							.send({ message: 'Login passed.', employeeUser });
+						const cookieMaxAge = TOKEN_EXPIRE_TIME * 1000;
+						res
+							.cookie('token', token, {
+								httpOnly: true,
+								maxAge: cookieMaxAge,
+								sameSite: 'strict',
+							})
+							.cookie('user', JSON.stringify(user), {
+								maxAge: cookieMaxAge,
+								sameSite: 'strict',
+							});
+						return res.status(201).send({ message: 'Login passed.', user });
 					}
 				});
 			} else {
@@ -49,6 +53,7 @@ export class LoginController {
 		next: NextFunction
 	) => {
 		if (req.body.lastName && req.body.password) next();
-		else res.status(400).send({ message: 'Missing employee crudentials.' });
+		else
+			res.status(400).send({ message: "Missing employee's name or password." });
 	};
 }

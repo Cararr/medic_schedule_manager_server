@@ -55,7 +55,7 @@ export class ScheduleController {
 		next: NextFunction
 	) => {
 		try {
-			const userRole = req.body.tokenDecoded.employeeRole;
+			const userRole = req.body.tokenDecoded.employee.role;
 			if (!isEmployeeBoss(userRole))
 				return res.status(403).send(new ForbiddenError());
 
@@ -131,7 +131,7 @@ export class ScheduleController {
 		next: NextFunction
 	) => {
 		try {
-			const userRole = req.body.tokenDecoded.employeeRole;
+			const userRole = req.body.tokenDecoded.employee.role;
 			if (!isEmployeeBoss(userRole))
 				return res.status(403).send(new ForbiddenError());
 
@@ -171,8 +171,9 @@ export class ScheduleController {
 			where: { date },
 		});
 		req.body.currentCellsPerDate = currentCellsPerDate;
+		if (typeof req.body.schedules !== 'object')
+			return res.status(400).send({ message: 'Incorrect request body.' });
 
-		req.body.schedules = req.body.schedules;
 		for (const stationName of Object.keys(req.body.schedules)) {
 			const station = req.body.stations.find(
 				(station: Station) => station.name === stationName

@@ -9,7 +9,6 @@ const validateToken = async (
 	next: NextFunction
 ) => {
 	const token: string = req.cookies.token;
-
 	if (token) {
 		jwt.verify(token, TOKEN_SECRET, (error, decoded) => {
 			if (error)

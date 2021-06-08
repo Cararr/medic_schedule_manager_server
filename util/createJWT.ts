@@ -4,15 +4,15 @@ import {
 	TOKEN_ISSUER,
 	TOKEN_SECRET,
 } from '../configs/config.json';
-import { user } from '../typeDefs/types';
+import { Employee } from '../source/domain/entities/Employee';
 
 const createJWT = (
-	user: user,
+	employee: Employee,
 	callback: (error: Error | null, token: string | null) => void
 ): void => {
 	try {
 		jwt.sign(
-			{ employeeId: user.id, employeeRole: user.role },
+			{ employee },
 			TOKEN_SECRET,
 			{
 				issuer: TOKEN_ISSUER,
