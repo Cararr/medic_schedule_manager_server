@@ -5,8 +5,8 @@ import { Station } from '../../domain/entities/Station';
 import { Employee } from '../../domain/entities/Employee';
 import { scheduleGenerator } from '../../domain/scheduleGenerator/scheduleGenerator';
 import { validateDateFormat } from '../../../util/utilities';
-import { dailyDateSchedule, employeeRole } from '../../../typeDefs/types';
-import { ForbiddenError, Authorized } from 'routing-controllers';
+import { dailyDateSchedule } from '../../../typeDefs/types';
+import { NotFoundError, BadRequestError } from 'routing-controllers';
 
 export class ScheduleController {
 	static getScheduleByDate = async (
@@ -17,7 +17,7 @@ export class ScheduleController {
 		try {
 			const date = req.query.date;
 			if (typeof date !== 'string' || !validateDateFormat(date))
-				return res.status(400).send({ message: 'Wrong date format.' });
+				return res.status(400).send(new BadRequestError('Wrong date format.'));
 
 			const response = await getRepository(ScheduleCell).find({
 				relations: ['station', 'employeeAtCell'],
@@ -55,10 +55,6 @@ export class ScheduleController {
 		next: NextFunction
 	) => {
 		try {
-			const userRole = req.body.tokenDecoded.employee.role;
-			if (!isEmployeeBoss(userRole))
-				return res.status(403).send(new ForbiddenError());
-
 			const scheduleCellsRepository = getRepository(ScheduleCell);
 			const cellsToSave: ScheduleCell[] = [];
 
@@ -109,21 +105,6 @@ export class ScheduleController {
 			next(error);
 		}
 	};
-	static loadStationsAndEmployees = async (
-		req: Request,
-		res: Response,
-		next: NextFunction
-	) => {
-		try {
-			const stations = await getRepository(Station).find();
-			const employees = await getRepository(Employee).find();
-			req.body.stations = stations;
-			req.body.employees = employees;
-			next();
-		} catch (error) {
-			next(error);
-		}
-	};
 
 	static deleteScheduleByDate = async (
 		req: Request,
@@ -131,13 +112,9 @@ export class ScheduleController {
 		next: NextFunction
 	) => {
 		try {
-			const userRole = req.body.tokenDecoded.employee.role;
-			if (!isEmployeeBoss(userRole))
-				return res.status(403).send(new ForbiddenError());
-
 			const date = req.params.date;
 			if (typeof date !== 'string' || !validateDateFormat(date))
-				return res.status(400).send({ message: 'Wrong date format.' });
+				return res.status(400).send(new BadRequestError('Wrong date format.'));
 
 			const cellRepo = getRepository(ScheduleCell);
 			const cellsAtDate = await cellRepo.find({
@@ -145,8 +122,8 @@ export class ScheduleController {
 			});
 			if (!cellsAtDate.length)
 				return res
-					.status(400)
-					.send({ message: 'Schedules for a given data not found.' });
+					.status(404)
+					.send(new NotFoundError('There are no schedules for a given data.'));
 
 			await cellRepo.remove(cellsAtDate);
 			res.status(204).send();
@@ -162,7 +139,7 @@ export class ScheduleController {
 	) => {
 		const date = req.params.date;
 		if (!validateDateFormat(date))
-			return res.status(400).send({ message: 'Invalid date.' });
+			return res.status(400).send(new BadRequestError('Invalid date.'));
 		req.body.date = date;
 
 		const scheduleCellsRepository = getRepository(ScheduleCell);
@@ -172,14 +149,18 @@ export class ScheduleController {
 		});
 		req.body.currentCellsPerDate = currentCellsPerDate;
 		if (typeof req.body.schedules !== 'object')
-			return res.status(400).send({ message: 'Incorrect request body.' });
+			return res
+				.status(400)
+				.send(new BadRequestError('Incorrect request body.'));
 
 		for (const stationName of Object.keys(req.body.schedules)) {
 			const station = req.body.stations.find(
 				(station: Station) => station.name === stationName
 			);
 			if (!station)
-				return res.status(400).send({ message: 'Wrong station names.' });
+				return res
+					.status(400)
+					.send(new BadRequestError('Wrong station names.'));
 
 			const cellsAtStaiton: (Employee | null)[] =
 				req.body.schedules[stationName];
@@ -188,18 +169,20 @@ export class ScheduleController {
 					cellValue !== null &&
 					!req.body.employees.some((emp: Employee) => emp.id === cellValue.id)
 				)
-					return res.status(400).send({
-						message:
-							'Wrong schedules values. Accept null or employee object with valid id',
-					});
+					return res
+						.status(400)
+						.send(
+							new BadRequestError(
+								'Wrong schedules values. Accept null or employee object with valid id'
+							)
+						);
 			}
 
 			if (cellsAtStaiton.length !== station.numberOfCellsInTable)
-				return res.status(400).send({ message: 'Wrong arrays length.' });
+				return res
+					.status(400)
+					.send(new BadRequestError('Wrong arrays length.'));
 		}
 		next();
 	};
 }
-
-const isEmployeeBoss = (role: employeeRole): boolean =>
-	role === employeeRole.BOSS;

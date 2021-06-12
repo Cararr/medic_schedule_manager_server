@@ -7,7 +7,7 @@ export class ScheduleCell {
 	@PrimaryGeneratedColumn()
 	public id: number;
 
-	@Column()
+	@Column({ type: 'date' })
 	public date: string;
 
 	@Column()

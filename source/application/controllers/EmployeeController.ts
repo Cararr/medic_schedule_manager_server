@@ -10,7 +10,7 @@ export class EmployeeController {
 	) => {
 		try {
 			const employees = await getRepository(Employee).find();
-			res.json(employees);
+			res.send(employees);
 		} catch (error) {
 			next(error);
 		}

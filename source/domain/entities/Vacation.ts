@@ -6,7 +6,7 @@ export class Vacation {
 	@PrimaryGeneratedColumn()
 	public id: number;
 
-	@Column()
+	@Column({ type: 'date' })
 	public date: string;
 
 	@ManyToOne(() => Employee, (employee) => employee.vacations, {

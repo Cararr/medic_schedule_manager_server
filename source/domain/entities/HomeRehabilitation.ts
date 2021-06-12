@@ -14,10 +14,10 @@ export class HomeRehabilitation {
 	@Column({ length: 250 })
 	public patient: string;
 
-	@Column()
+	@Column({ type: 'date' })
 	public date: string;
 
-	@Column()
+	@Column({ type: 'time' })
 	public startTime: string;
 
 	constructor(
