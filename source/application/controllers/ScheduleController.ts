@@ -24,12 +24,12 @@ export class ScheduleController {
 				where: { date },
 			});
 
-			const completeDailySchedule: dailyDateSchedule = { [date]: {} };
+			const completeDailySchedule: dailyDateSchedule = { date, schedules: {} };
 
 			// if there are no schedule for given data controller should send back null arrays for each station
 
 			req.body.stations.forEach((station: Station) => {
-				completeDailySchedule[date][station.name] = new Array(
+				completeDailySchedule.schedules[station.name] = new Array(
 					station.numberOfCellsInTable
 				).fill(null);
 			});
@@ -39,7 +39,7 @@ export class ScheduleController {
 					const stationName = tableCell.station.name;
 					const employeeInCell = tableCell.employeeAtCell;
 					const indexOfCell = tableCell.orderInTable;
-					completeDailySchedule[date][stationName][indexOfCell] =
+					completeDailySchedule.schedules[stationName][indexOfCell] =
 						employeeInCell;
 				});
 			}
@@ -100,7 +100,11 @@ export class ScheduleController {
 		next: NextFunction
 	) => {
 		try {
-			res.send(scheduleGenerator(req.body.employees, req.body.stations));
+			const generatedSchedule = scheduleGenerator(
+				req.body.employees,
+				req.body.stations
+			);
+			res.send({ generatedSchedule });
 		} catch (error) {
 			next(error);
 		}

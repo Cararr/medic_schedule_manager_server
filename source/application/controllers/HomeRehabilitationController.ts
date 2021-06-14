@@ -19,13 +19,11 @@ export class HomeRehabilitationController {
 			if (!validateDateFormat(date))
 				return res.status(400).send(new BadRequestError('Wrong date format'));
 
-			const dailyHomeRehabilitations = await getRepository(
-				HomeRehabilitation
-			).find({
+			const homeRehabilitations = await getRepository(HomeRehabilitation).find({
 				relations: ['employee'],
 				where: { date },
 			});
-			res.send(dailyHomeRehabilitations);
+			res.send({ homeRehabilitations });
 		} catch (error) {
 			next(error);
 		}

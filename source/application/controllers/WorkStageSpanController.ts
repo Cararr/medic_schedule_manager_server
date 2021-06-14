@@ -9,8 +9,8 @@ export class WorkStageSpanController {
 		next: NextFunction
 	) => {
 		try {
-			const stageSpans = await getRepository(WorkStageSpan).find();
-			res.json(stageSpans);
+			const workStageSpans = await getRepository(WorkStageSpan).find();
+			res.send({ workStageSpans });
 		} catch (error) {
 			next(error);
 		}

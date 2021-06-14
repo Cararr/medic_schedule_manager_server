@@ -1,6 +1,7 @@
 import { Employee } from '../source/domain/entities/Employee';
 export interface dailyDateSchedule {
-	[date: string]: {
+	date: string;
+	schedules: {
 		[station: string]: (Employee | null)[];
 	};
 }

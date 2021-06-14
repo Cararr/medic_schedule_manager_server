@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { getRepository } from 'typeorm';
 import { Employee } from '../../domain/entities/Employee';
 import { TOKEN_EXPIRE_TIME } from '../../../configs/config.json';
-import { NotFoundError } from 'routing-controllers';
+import { BadRequestError, UnauthorizedError } from 'routing-controllers';
 import bcrypt from 'bcryptjs';
 import createJWT from '../../../util/createJWT';
 
@@ -17,7 +17,9 @@ export class LoginController {
 			});
 
 			if (!user)
-				return res.status(404).send(new NotFoundError('Employee not found!'));
+				return res
+					.status(401)
+					.send(new UnauthorizedError('Employee not found!'));
 
 			const match = await bcrypt.compare(password, user.password);
 
@@ -41,7 +43,7 @@ export class LoginController {
 					}
 				});
 			} else {
-				res.status(401).send({ message: 'Wrong password!' });
+				res.status(401).send(new UnauthorizedError('Wrong password!'));
 			}
 		} catch (error) {
 			next(error);
@@ -55,6 +57,8 @@ export class LoginController {
 	) => {
 		if (req.body.lastName && req.body.password) next();
 		else
-			res.status(400).send({ message: "Missing employee's name or password." });
+			res
+				.status(400)
+				.send(new BadRequestError("Missing employee's name or password."));
 	};
 }
