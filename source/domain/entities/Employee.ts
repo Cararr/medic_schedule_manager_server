@@ -29,7 +29,7 @@ export class Employee {
 		() => HomeRehabilitation,
 		(homeRehabilitation) => homeRehabilitation.employee
 	)
-	public homeRehabilitaitons: HomeRehabilitation[];
+	public homeRehabilitations: HomeRehabilitation[];
 
 	@OneToMany(() => Vacation, (vacation) => vacation.employee)
 	public vacations: Vacation[];

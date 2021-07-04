@@ -6,7 +6,7 @@ export class HomeRehabilitation {
 	@PrimaryGeneratedColumn()
 	public id: number;
 
-	@ManyToOne(() => Employee, (employee) => employee.homeRehabilitaitons, {
+	@ManyToOne(() => Employee, (employee) => employee.homeRehabilitations, {
 		nullable: false,
 	})
 	public employee: Employee;

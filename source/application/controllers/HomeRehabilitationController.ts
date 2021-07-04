@@ -35,20 +35,20 @@ export class HomeRehabilitationController {
 		next: NextFunction
 	) => {
 		try {
-			const homeRehabilitaitonsRepository = getRepository(HomeRehabilitation);
+			const homeRehabilitationsRepository = getRepository(HomeRehabilitation);
 
-			const homeRehabilitaitons = req.body.homeRehabilitaitons;
+			const homeRehabilitations = req.body.homeRehabilitations;
 
-			const createdHomeRehabilitaitonsIds =
-				await homeRehabilitaitonsRepository.insert(homeRehabilitaitons);
+			const createdhomeRehabilitationsIds =
+				await homeRehabilitationsRepository.insert(homeRehabilitations);
 
-			homeRehabilitaitons.forEach((hR: HomeRehabilitation, index: number) => {
-				hR.id = createdHomeRehabilitaitonsIds.identifiers[index].id;
+			homeRehabilitations.forEach((hR: HomeRehabilitation, index: number) => {
+				hR.id = createdhomeRehabilitationsIds.identifiers[index].id;
 			});
 
 			res.status(201).send({
 				message: 'Created.',
-				homeRehabilitaitons,
+				homeRehabilitations,
 			});
 		} catch (error) {
 			next(error);
@@ -60,53 +60,57 @@ export class HomeRehabilitationController {
 		res: Response,
 		next: NextFunction
 	) => {
-		const homeRehabilitaitonsRepository = getRepository(HomeRehabilitation);
+		try {
+			const homeRehabilitationsRepository = getRepository(HomeRehabilitation);
 
-		const homeRehabilitation = await homeRehabilitaitonsRepository.findOne(
-			req.params.id
-		);
+			const homeRehabilitation = await homeRehabilitationsRepository.findOne(
+				req.params.id
+			);
 
-		if (!homeRehabilitation)
-			return res
-				.status(404)
-				.send(new NotFoundError('Home Rehabilitaiton not found.'));
+			if (!homeRehabilitation)
+				return res
+					.status(404)
+					.send(new NotFoundError('Home Rehabilitation not found.'));
 
-		const error = verifyHomeRehabilitation(
-			req.body.homeRehabilitaiton,
-			req.body.employees
-		);
-		if (error) return res.status(400).send(error);
+			const error = verifyHomeRehabilitation(
+				req.body.homeRehabilitation,
+				req.body.employees
+			);
+			if (error) return res.status(400).send(error);
 
-		await homeRehabilitaitonsRepository.update(
-			homeRehabilitation.id,
-			req.body.homeRehabilitaiton
-		);
+			await homeRehabilitationsRepository.update(
+				homeRehabilitation.id,
+				req.body.homeRehabilitation
+			);
 
-		const updatedHomeRehabilitation =
-			await homeRehabilitaitonsRepository.findOne(homeRehabilitation.id);
+			const updatedHomeRehabilitation =
+				await homeRehabilitationsRepository.findOne(homeRehabilitation.id);
 
-		res.send({
-			message: 'Updated.',
-			homeRehabilitation: updatedHomeRehabilitation,
-		});
+			res.send({
+				message: 'Updated.',
+				homeRehabilitation: updatedHomeRehabilitation,
+			});
+		} catch (error) {
+			next(error);
+		}
 	};
 
-	static deleteHomeRehabilitaiton = async (
+	static deleteHomeRehabilitation = async (
 		req: Request,
 		res: Response,
 		next: NextFunction
 	) => {
-		const homeRehabilitaitonsRepository = getRepository(HomeRehabilitation);
-		const homeRehabilitation = await homeRehabilitaitonsRepository.findOne(
+		const homeRehabilitationsRepository = getRepository(HomeRehabilitation);
+		const homeRehabilitation = await homeRehabilitationsRepository.findOne(
 			req.params.id
 		);
 
 		if (!homeRehabilitation)
 			return res
 				.status(404)
-				.send(new NotFoundError('Home Rehabilitaiton not found.'));
+				.send(new NotFoundError('Home Rehabilitation not found.'));
 
-		await homeRehabilitaitonsRepository.remove(homeRehabilitation);
+		await homeRehabilitationsRepository.remove(homeRehabilitation);
 		res.status(204).send();
 	};
 
@@ -115,12 +119,21 @@ export class HomeRehabilitationController {
 		res: Response,
 		next: NextFunction
 	) => {
-		if (!Array.isArray(req.body.homeRehabilitaitons))
+		if (!Array.isArray(req.body.homeRehabilitations))
 			return res
 				.status(400)
 				.send(new BadRequestError('homeRehabilitations is not an array.'));
 
-		for (const hReh of req.body.homeRehabilitaitons) {
+		if (req.body.homeRehabilitations.length > 100)
+			return res
+				.status(400)
+				.send(
+					new BadRequestError(
+						'Excessive homeRehabilitations size. Maximum home rehabilitations to create per request is 100'
+					)
+				);
+
+		for (const hReh of req.body.homeRehabilitations) {
 			const error = verifyHomeRehabilitation(hReh, req.body.employees);
 			if (error) return res.status(400).send(error);
 		}
@@ -129,18 +142,24 @@ export class HomeRehabilitationController {
 }
 
 const verifyHomeRehabilitation = (
-	homeRehabilitaiton: any,
+	homeRehabilitation: HomeRehabilitation,
 	employees: [Employee]
 ): BadRequestError | boolean => {
-	if (!validateDateFormat(homeRehabilitaiton.date))
+	if (!homeRehabilitation)
+		return new BadRequestError(
+			'Request is missing homeRehabilitation property.'
+		);
+	if (!validateDateFormat(homeRehabilitation.date))
 		return new BadRequestError('Wrong date format.');
-	if (!validateTimeFormat(homeRehabilitaiton.startTime))
+	if (!validateTimeFormat(homeRehabilitation.startTime))
 		return new BadRequestError('Wrong time format.');
-	if (typeof homeRehabilitaiton.patient !== 'string')
+	if (typeof homeRehabilitation.patient !== 'string')
 		return new BadRequestError('Wrong patient format.');
+	if (!homeRehabilitation.employee)
+		return new BadRequestError('No Employee included.');
 	if (
 		!employees.some(
-			(emp: Employee) => emp.id === homeRehabilitaiton.employee.id
+			(emp: Employee) => emp.id === homeRehabilitation.employee.id
 		)
 	)
 		return new BadRequestError('No employee match.');

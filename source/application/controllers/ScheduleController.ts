@@ -49,6 +49,12 @@ export class ScheduleController {
 		}
 	};
 
+	static createSchedules = async (
+		req: Request,
+		res: Response,
+		next: NextFunction
+	) => {};
+
 	static saveSchedule = async (
 		req: Request,
 		res: Response,
@@ -136,22 +142,11 @@ export class ScheduleController {
 		}
 	};
 
-	static saveScheduleReqVeryfier = async (
+	static verifySchedulesPayload = async (
 		req: Request,
 		res: Response,
 		next: NextFunction
 	) => {
-		const date = req.params.date;
-		if (!validateDateFormat(date))
-			return res.status(400).send(new BadRequestError('Invalid date.'));
-		req.body.date = date;
-
-		const scheduleCellsRepository = getRepository(ScheduleCell);
-		const currentCellsPerDate = await scheduleCellsRepository.find({
-			relations: ['station', 'employeeAtCell'],
-			where: { date },
-		});
-		req.body.currentCellsPerDate = currentCellsPerDate;
 		if (typeof req.body.schedules !== 'object')
 			return res
 				.status(400)
@@ -187,6 +182,41 @@ export class ScheduleController {
 					.status(400)
 					.send(new BadRequestError('Wrong arrays length.'));
 		}
+		next();
+	};
+
+	static createSchedulesBodyVeryfier = async (
+		req: Request,
+		res: Response,
+		next: NextFunction
+	) => {
+		if (
+			!validateDateFormat(req.body.from) ||
+			!validateDateFormat(req.body.to) ||
+			new Date(req.body.from) > new Date(req.body.to)
+		)
+			return res.status(400).send(new BadRequestError('Invalid date.'));
+		next();
+	};
+
+	static saveScheduleReqVeryfier = async (
+		req: Request,
+		res: Response,
+		next: NextFunction
+	) => {
+		const date = req.params.date;
+		if (!validateDateFormat(date))
+			return res.status(400).send(new BadRequestError('Invalid date.'));
+		req.body.date = date;
+
+		const scheduleCellsRepository = getRepository(ScheduleCell);
+		const currentCellsPerDate = await scheduleCellsRepository.find({
+			relations: ['station', 'employeeAtCell'],
+			where: { date },
+		});
+
+		req.body.currentCellsPerDate = currentCellsPerDate;
+
 		next();
 	};
 }

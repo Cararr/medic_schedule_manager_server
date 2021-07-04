@@ -20,12 +20,23 @@ scheduleRouter.get(
 	ScheduleController.generateScheudle
 );
 
+scheduleRouter.post(
+	'/schedules',
+	validateToken,
+	verifyPermissions,
+	preloadStationsAndEmployees,
+	ScheduleController.createSchedulesBodyVeryfier,
+	ScheduleController.verifySchedulesPayload,
+	ScheduleController.createSchedules
+);
+
 scheduleRouter.put(
 	'/schedules/:date',
 	validateToken,
 	verifyPermissions,
 	preloadStationsAndEmployees,
 	ScheduleController.saveScheduleReqVeryfier,
+	ScheduleController.verifySchedulesPayload,
 	ScheduleController.saveSchedule
 );
 

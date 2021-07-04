@@ -7,13 +7,13 @@ import preloadStationsAndEmployees from '../middleware/preloadStationsAndEmploye
 export const homeRehabilitationRouter = express.Router();
 
 homeRehabilitationRouter.get(
-	'/home-rehabilitaitons',
+	'/home-rehabilitations',
 	validateToken,
 	HomeRehabilitationController.getHomeRehabilitationsByDate
 );
 
 homeRehabilitationRouter.post(
-	'/home-rehabilitaitons',
+	'/home-rehabilitations',
 	validateToken,
 	verifyPermissions,
 	preloadStationsAndEmployees,
@@ -22,7 +22,7 @@ homeRehabilitationRouter.post(
 );
 
 homeRehabilitationRouter.put(
-	'/home-rehabilitaitons/:id',
+	'/home-rehabilitations/:id',
 	validateToken,
 	verifyPermissions,
 	preloadStationsAndEmployees,
@@ -30,8 +30,8 @@ homeRehabilitationRouter.put(
 );
 
 homeRehabilitationRouter.delete(
-	'/home-rehabilitaitons/:id',
+	'/home-rehabilitations/:id',
 	validateToken,
 	verifyPermissions,
-	HomeRehabilitationController.deleteHomeRehabilitaiton
+	HomeRehabilitationController.deleteHomeRehabilitation
 );
