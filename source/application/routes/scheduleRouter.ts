@@ -25,7 +25,7 @@ scheduleRouter.post(
 	validateToken,
 	verifyPermissions,
 	preloadStationsAndEmployees,
-	ScheduleController.createSchedulesBodyVeryfier,
+	ScheduleController.createSchedulesReqVeryfier,
 	ScheduleController.verifySchedulesPayload,
 	ScheduleController.createSchedules
 );

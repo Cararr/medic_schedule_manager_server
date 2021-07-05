@@ -4,7 +4,11 @@ import { ScheduleCell } from '../../domain/entities/ScheduleCell';
 import { Station } from '../../domain/entities/Station';
 import { Employee } from '../../domain/entities/Employee';
 import { scheduleGenerator } from '../../domain/scheduleGenerator/scheduleGenerator';
-import { validateDateFormat } from '../../../util/utilities';
+import {
+	validateDateFormat,
+	incrementDateByDay,
+	formatDateString,
+} from '../../../util/utilities';
 import { dailyDateSchedule } from '../../../typeDefs/types';
 import { NotFoundError, BadRequestError } from 'routing-controllers';
 
@@ -53,7 +57,60 @@ export class ScheduleController {
 		req: Request,
 		res: Response,
 		next: NextFunction
-	) => {};
+	) => {
+		try {
+			const scheduleCellsRepository = getRepository(ScheduleCell);
+
+			const dates: string[] = [];
+			let currentDate = new Date(req.body.from);
+			const end = new Date(req.body.to);
+			while (currentDate <= end) {
+				if (![0, 6].includes(currentDate.getDay()))
+					dates.push(formatDateString(currentDate));
+				currentDate = incrementDateByDay(currentDate);
+			}
+
+			const createdCells: ScheduleCell[] = [];
+
+			for (const date of dates) {
+				const currentCellsAtDate = await scheduleCellsRepository.find({
+					relations: ['station', 'employeeAtCell'],
+					where: { date },
+				});
+				await scheduleCellsRepository.remove(currentCellsAtDate);
+
+				for (const stationName in req.body.schedules) {
+					if (
+						Object.prototype.hasOwnProperty.call(
+							req.body.schedules,
+							stationName
+						)
+					) {
+						const stationEntity: Station = req.body.stations.find(
+							(stat: Station) => stat.name === stationName
+						);
+
+						const reqCellsAtStation = req.body.schedules[stationName];
+
+						for (const [index, reqCell] of reqCellsAtStation.entries()) {
+							const newCell = scheduleCellsRepository.create({
+								date,
+								station: stationEntity,
+								employeeAtCell: reqCell,
+								orderInTable: index,
+							});
+
+							createdCells.push(newCell);
+						}
+					}
+				}
+			}
+			const response = await scheduleCellsRepository.save(createdCells);
+			res.status(201).send(response);
+		} catch (error) {
+			next(error);
+		}
+	};
 
 	static saveSchedule = async (
 		req: Request,
@@ -185,7 +242,7 @@ export class ScheduleController {
 		next();
 	};
 
-	static createSchedulesBodyVeryfier = async (
+	static createSchedulesReqVeryfier = async (
 		req: Request,
 		res: Response,
 		next: NextFunction
