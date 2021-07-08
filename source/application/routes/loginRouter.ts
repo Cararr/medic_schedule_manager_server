@@ -4,6 +4,6 @@ export const loginRouter = express.Router();
 
 loginRouter.post(
 	'/login',
-	LoginController.loginBodyVeryfier,
+	LoginController.verifyPayload,
 	LoginController.login
 );

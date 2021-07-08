@@ -5,7 +5,7 @@ export function validateDateFormat(date: any): boolean {
 /**
  *
  * @param time time string to veryfy. Correct format should be hh:mm:ss
- * @returns boolean of string test by given regexp
+ * @returns boolean pass or no
  */
 export function validateTimeFormat(time: any): boolean {
 	return /^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/.test(time);

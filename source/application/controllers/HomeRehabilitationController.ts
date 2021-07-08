@@ -3,13 +3,15 @@ import { getRepository } from 'typeorm';
 import { Employee } from '../../domain/entities/Employee';
 import { HomeRehabilitation } from '../../domain/entities/HomeRehabilitation';
 import {
+	formatDateString,
+	incrementDateByDay,
 	validateDateFormat,
 	validateTimeFormat,
 } from '../../../util/utilities';
 import { BadRequestError, NotFoundError } from 'routing-controllers';
 
 export class HomeRehabilitationController {
-	static getHomeRehabilitationsByDate = async (
+	static getByDate = async (
 		req: Request,
 		res: Response,
 		next: NextFunction
@@ -29,37 +31,41 @@ export class HomeRehabilitationController {
 		}
 	};
 
-	static createHomeRehabilitations = async (
-		req: Request,
-		res: Response,
-		next: NextFunction
-	) => {
+	static create = async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const homeRehabilitationsRepository = getRepository(HomeRehabilitation);
 
-			const homeRehabilitations = req.body.homeRehabilitations;
+			const dates: string[] = [];
+			let currentDate = new Date(req.body.from);
+			const end = new Date(req.body.to);
+			while (currentDate <= end) {
+				if (![0, 6].includes(currentDate.getDay()))
+					dates.push(formatDateString(currentDate));
+				currentDate = incrementDateByDay(currentDate);
+			}
 
-			const createdhomeRehabilitationsIds =
-				await homeRehabilitationsRepository.insert(homeRehabilitations);
+			const homeRehabilitation: HomeRehabilitation =
+				req.body.homeRehabilitation;
+			const createdHRs: HomeRehabilitation[] = [];
 
-			homeRehabilitations.forEach((hR: HomeRehabilitation, index: number) => {
-				hR.id = createdhomeRehabilitationsIds.identifiers[index].id;
-			});
+			for (const date of dates) {
+				const newHR = homeRehabilitationsRepository.create({
+					...homeRehabilitation,
+					date,
+				});
+				createdHRs.push(newHR);
+			}
 
-			res.status(201).send({
-				message: 'Created.',
-				homeRehabilitations,
-			});
+			const response = await homeRehabilitationsRepository.save(createdHRs);
+			res
+				.status(201)
+				.send({ message: 'Created.', homeRehabilitations: response });
 		} catch (error) {
 			next(error);
 		}
 	};
 
-	static updateHomeRehabilitation = async (
-		req: Request,
-		res: Response,
-		next: NextFunction
-	) => {
+	static update = async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const homeRehabilitationsRepository = getRepository(HomeRehabilitation);
 
@@ -95,11 +101,7 @@ export class HomeRehabilitationController {
 		}
 	};
 
-	static deleteHomeRehabilitation = async (
-		req: Request,
-		res: Response,
-		next: NextFunction
-	) => {
+	static delete = async (req: Request, res: Response, next: NextFunction) => {
 		const homeRehabilitationsRepository = getRepository(HomeRehabilitation);
 		const homeRehabilitation = await homeRehabilitationsRepository.findOne(
 			req.params.id
@@ -114,29 +116,20 @@ export class HomeRehabilitationController {
 		res.status(204).send();
 	};
 
-	static createHomeRehabilitationsBodyVeryfier = async (
+	static verifyCreatePayload = async (
 		req: Request,
 		res: Response,
 		next: NextFunction
 	) => {
-		if (!Array.isArray(req.body.homeRehabilitations))
-			return res
-				.status(400)
-				.send(new BadRequestError('homeRehabilitations is not an array.'));
+		if (!validateDateFormat(req.body.from) || !validateDateFormat(req.body.to))
+			return new BadRequestError('Wrong date format.');
 
-		if (req.body.homeRehabilitations.length > 100)
-			return res
-				.status(400)
-				.send(
-					new BadRequestError(
-						'Excessive homeRehabilitations size. Maximum home rehabilitations to create per request is 100'
-					)
-				);
+		const error = verifyHomeRehabilitation(
+			req.body.homeRehabilitation,
+			req.body.employees
+		);
+		if (error) return res.status(400).send(error);
 
-		for (const hReh of req.body.homeRehabilitations) {
-			const error = verifyHomeRehabilitation(hReh, req.body.employees);
-			if (error) return res.status(400).send(error);
-		}
 		next();
 	};
 }
@@ -149,8 +142,6 @@ const verifyHomeRehabilitation = (
 		return new BadRequestError(
 			'Request is missing homeRehabilitation property.'
 		);
-	if (!validateDateFormat(homeRehabilitation.date))
-		return new BadRequestError('Wrong date format.');
 	if (!validateTimeFormat(homeRehabilitation.startTime))
 		return new BadRequestError('Wrong time format.');
 	if (typeof homeRehabilitation.patient !== 'string')

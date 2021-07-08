@@ -50,11 +50,7 @@ export class LoginController {
 		}
 	};
 
-	static loginBodyVeryfier = (
-		req: Request,
-		res: Response,
-		next: NextFunction
-	) => {
+	static verifyPayload = (req: Request, res: Response, next: NextFunction) => {
 		if (req.body.lastName && req.body.password) next();
 		else
 			res

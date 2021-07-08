@@ -10,14 +10,14 @@ scheduleRouter.get(
 	'/schedules',
 	validateToken,
 	preloadStationsAndEmployees,
-	ScheduleController.getScheduleByDate
+	ScheduleController.getByDate
 );
 
 scheduleRouter.get(
 	'/schedules/generate',
 	validateToken,
 	preloadStationsAndEmployees,
-	ScheduleController.generateScheudle
+	ScheduleController.generate
 );
 
 scheduleRouter.post(
@@ -25,9 +25,8 @@ scheduleRouter.post(
 	validateToken,
 	verifyPermissions,
 	preloadStationsAndEmployees,
-	ScheduleController.createSchedulesReqVeryfier,
-	ScheduleController.verifySchedulesPayload,
-	ScheduleController.createSchedules
+	ScheduleController.verifyPayload,
+	ScheduleController.create
 );
 
 scheduleRouter.put(
@@ -35,14 +34,14 @@ scheduleRouter.put(
 	validateToken,
 	verifyPermissions,
 	preloadStationsAndEmployees,
-	ScheduleController.saveScheduleReqVeryfier,
-	ScheduleController.verifySchedulesPayload,
-	ScheduleController.saveSchedule
+	ScheduleController.verifyUpdatePayload,
+	ScheduleController.verifyPayload,
+	ScheduleController.update
 );
 
 scheduleRouter.delete(
 	'/schedules/:date',
 	validateToken,
 	verifyPermissions,
-	ScheduleController.deleteScheduleByDate
+	ScheduleController.deleteByDate
 );

@@ -9,7 +9,7 @@ export const homeRehabilitationRouter = express.Router();
 homeRehabilitationRouter.get(
 	'/home-rehabilitations',
 	validateToken,
-	HomeRehabilitationController.getHomeRehabilitationsByDate
+	HomeRehabilitationController.getByDate
 );
 
 homeRehabilitationRouter.post(
@@ -17,8 +17,8 @@ homeRehabilitationRouter.post(
 	validateToken,
 	verifyPermissions,
 	preloadStationsAndEmployees,
-	HomeRehabilitationController.createHomeRehabilitationsBodyVeryfier,
-	HomeRehabilitationController.createHomeRehabilitations
+	HomeRehabilitationController.verifyCreatePayload,
+	HomeRehabilitationController.create
 );
 
 homeRehabilitationRouter.put(
@@ -26,12 +26,12 @@ homeRehabilitationRouter.put(
 	validateToken,
 	verifyPermissions,
 	preloadStationsAndEmployees,
-	HomeRehabilitationController.updateHomeRehabilitation
+	HomeRehabilitationController.update
 );
 
 homeRehabilitationRouter.delete(
 	'/home-rehabilitations/:id',
 	validateToken,
 	verifyPermissions,
-	HomeRehabilitationController.deleteHomeRehabilitation
+	HomeRehabilitationController.delete
 );

@@ -13,7 +13,7 @@ import { dailyDateSchedule } from '../../../typeDefs/types';
 import { NotFoundError, BadRequestError } from 'routing-controllers';
 
 export class ScheduleController {
-	static getScheduleByDate = async (
+	static getByDate = async (
 		req: Request,
 		res: Response,
 		next: NextFunction
@@ -53,11 +53,14 @@ export class ScheduleController {
 		}
 	};
 
-	static createSchedules = async (
-		req: Request,
-		res: Response,
-		next: NextFunction
-	) => {
+	static create = async (req: Request, res: Response, next: NextFunction) => {
+		if (
+			!validateDateFormat(req.body.from) ||
+			!validateDateFormat(req.body.to) ||
+			new Date(req.body.from) > new Date(req.body.to)
+		)
+			return res.status(400).send(new BadRequestError('Invalid date.'));
+
 		try {
 			const scheduleCellsRepository = getRepository(ScheduleCell);
 
@@ -106,17 +109,13 @@ export class ScheduleController {
 				}
 			}
 			const response = await scheduleCellsRepository.save(createdCells);
-			res.status(201).send(response);
+			res.status(201).send({ message: 'Created.', schedules: response });
 		} catch (error) {
 			next(error);
 		}
 	};
 
-	static saveSchedule = async (
-		req: Request,
-		res: Response,
-		next: NextFunction
-	) => {
+	static update = async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const scheduleCellsRepository = getRepository(ScheduleCell);
 			const cellsToSave: ScheduleCell[] = [];
@@ -151,17 +150,13 @@ export class ScheduleController {
 				}
 			}
 			const response = await scheduleCellsRepository.save(cellsToSave);
-			res.send(response);
+			res.send({ message: 'Updated.', homeRehabilitations: response });
 		} catch (error) {
 			next(error);
 		}
 	};
 
-	static generateScheudle = async (
-		req: Request,
-		res: Response,
-		next: NextFunction
-	) => {
+	static generate = async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const generatedSchedule = scheduleGenerator(
 				req.body.employees,
@@ -173,7 +168,7 @@ export class ScheduleController {
 		}
 	};
 
-	static deleteScheduleByDate = async (
+	static deleteByDate = async (
 		req: Request,
 		res: Response,
 		next: NextFunction
@@ -199,7 +194,7 @@ export class ScheduleController {
 		}
 	};
 
-	static verifySchedulesPayload = async (
+	static verifyPayload = async (
 		req: Request,
 		res: Response,
 		next: NextFunction
@@ -242,21 +237,7 @@ export class ScheduleController {
 		next();
 	};
 
-	static createSchedulesReqVeryfier = async (
-		req: Request,
-		res: Response,
-		next: NextFunction
-	) => {
-		if (
-			!validateDateFormat(req.body.from) ||
-			!validateDateFormat(req.body.to) ||
-			new Date(req.body.from) > new Date(req.body.to)
-		)
-			return res.status(400).send(new BadRequestError('Invalid date.'));
-		next();
-	};
-
-	static saveScheduleReqVeryfier = async (
+	static verifyUpdatePayload = async (
 		req: Request,
 		res: Response,
 		next: NextFunction
