@@ -8,6 +8,7 @@ import {
 	validateDateFormat,
 	incrementDateByDay,
 	formatDateString,
+	orderStations,
 } from '../../../util/utilities';
 import { dailyDateSchedule } from '../../../typeDefs/types';
 import { NotFoundError, BadRequestError } from 'routing-controllers';
@@ -160,7 +161,7 @@ export class ScheduleController {
 		try {
 			const generatedSchedule = scheduleGenerator(
 				req.body.employees,
-				req.body.stations
+				orderStations(req.body.stations)
 			);
 			res.send({ generatedSchedule });
 		} catch (error) {

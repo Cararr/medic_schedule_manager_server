@@ -1,3 +1,5 @@
+import { Station } from '../source/domain/entities/Station';
+
 export function validateDateFormat(date: any): boolean {
 	return /^\d{4}[-](0?[1-9]|1[012])[-](0?[1-9]|[12][0-9]|3[01])$/.test(date);
 }
@@ -19,4 +21,28 @@ export function formatDateString(date: Date) {
 	const dateArray = date.toLocaleDateString().split('.');
 	const day = Number(dateArray[0]) < 10 ? `0${dateArray[0]}` : dateArray[0];
 	return `${dateArray[2]}-${dateArray[1]}-${day}`;
+}
+
+export function orderStations(stations: Station[]): Station[] {
+	const orderedStations: Station[] = [];
+
+	for (const station of stations) {
+		switch (station.name) {
+			case 'KINEZA':
+				orderedStations[0] = station;
+				break;
+			case 'FIZYKO':
+				orderedStations[1] = station;
+				break;
+			case 'MASAZ':
+				orderedStations[2] = station;
+				break;
+			case 'WIZYTY':
+				orderedStations[3] = station;
+				break;
+			default:
+				console.error('Station name not recognized.');
+		}
+	}
+	return orderedStations;
 }
