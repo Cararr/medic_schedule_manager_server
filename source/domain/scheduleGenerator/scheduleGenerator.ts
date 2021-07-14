@@ -15,17 +15,6 @@ export const scheduleGenerator = (
 	employeesList: Employee[],
 	stations: Station[]
 ): dailySchedule => {
-	/* let test: GeneratorEmployee[] = [];
-	
-	employeesList.forEach((element) => {
-		test.push(new GeneratorEmployee(element, 'evening '));
-	});
-
-	test = _.shuffle(test);
-	test.forEach((element,index) => {
-		if(index<=3)
-	});
-	console.log(test); */
 	const employees: GeneratorEmployee[] = [];
 	_.shuffle(employeesList).forEach((employee, index) => {
 		const shiftType: shift = index < 5 ? shift.MORNING : shift.EVENING;
@@ -37,87 +26,81 @@ export const scheduleGenerator = (
 		schedule[station.name] = new Array(station.numberOfCellsInTable).fill(null);
 	}
 
+	// FIRST
 	employees.forEach((employee, index) => {
-		const station = stations[index % 3];
-		const tableIndex = findFirstEmpty(
-			schedule[station.name],
-			WORKSTAGESPANS.FIRST
-		);
-		employee.stationsOccupied.push(station);
-		schedule[station.name][tableIndex] = employee.employee;
-	});
-
-	employees.forEach((employee) => {
-		const previousStation = _.last(employee.stationsOccupied);
-
-		let station = returnDifferentStation(stations, previousStation);
-		let tableIndex = findFirstEmpty(
-			schedule[station.name],
-			WORKSTAGESPANS.SECOND
-		);
-
-		while (tableIndex === undefined) {
-			station = returnDifferentStation(stations, previousStation);
-			tableIndex = findFirstEmpty(
-				schedule[station.name],
-				WORKSTAGESPANS.SECOND
-			);
-			console.log(station);
-		}
-
-		employee.stationsOccupied.push(station);
-		schedule[station.name][tableIndex] = employee.employee;
-	});
-
-	employees.forEach((employee) => {
-		const previousStation = _.last(employee.stationsOccupied);
-		const station = returnDifferentStation(stations, previousStation);
-
-		const tableIndex = findFirstEmpty(
-			schedule[station.name],
-			WORKSTAGESPANS.THIRD
-		);
-		employee.stationsOccupied.push(station);
-		schedule[station.name][tableIndex] = employee.employee;
-	});
-
-	employees.forEach((employee) => {
-		if (employee.shift === 'EVENING') {
-			const previousStation = _.last(employee.stationsOccupied);
-			const station = returnDifferentStation(stations, previousStation);
-
+		if (employee.shift === 'MORNING') {
+			const station = stations[index % 3];
 			const tableIndex = findFirstEmpty(
 				schedule[station.name],
-				WORKSTAGESPANS.FOURTH
+				WORKSTAGESPANS.FIRST
 			);
 			employee.stationsOccupied.push(station);
 			schedule[station.name][tableIndex] = employee.employee;
 		}
 	});
 
-	// console.log(employees);
+	// SECOND
+	employees.forEach((employee) => {
+		let station: Station;
+		let tableIndex: number;
 
-	/* const employeesCounter: Map<Employee, { counter: number }> = new Map();
-	for (const employee of employees) {
-		employeesCounter.set(employee, { counter: 0 });
-	}
+		const previousStation = _.last(employee.stationsOccupied);
 
-	for (const station of stations) {
-		schedule[station.name] = new Array(station.numberOfCellsInTable).fill(null);
+		while (_.isUndefined(tableIndex)) {
+			if (employee.shift === 'MORNING') {
+				station = returnDifferentStation(stations, previousStation);
+			} else if (employee.shift === 'EVENING') {
+				station = stations[_.random(2)];
+			}
+			tableIndex = findFirstEmpty(
+				schedule[station.name],
+				WORKSTAGESPANS.SECOND
+			);
+		}
 
-		schedule[station.name].forEach((cell, index, array) => {
-			const randomEmployee =
-				employees[Math.floor(Math.random() * employees.length)];
-			employeesCounter.get(randomEmployee).counter++;
+		employee.stationsOccupied.push(station);
+		schedule[station.name][tableIndex] = employee.employee;
+	});
 
-			if (employeesCounter.get(randomEmployee).counter === 3)
-				employees.splice(
-					employees.findIndex((emp) => emp.id === randomEmployee.id),
-					1
+	// THIRD
+	//JEST LIPA - EMP MOŻE MIEĆ DURGI RAZ MASAŻ
+	employees.forEach((employee) => {
+		const previousStation = _.last(employee.stationsOccupied);
+		let station: Station;
+		let tableIndex: number;
+
+		while (_.isUndefined(tableIndex)) {
+			station = returnDifferentStation(stations, previousStation, true);
+			tableIndex = findFirstEmpty(
+				schedule[station.name],
+				station.name === 'WIZYTY' ? [0] : WORKSTAGESPANS.THIRD
+			);
+		}
+
+		employee.stationsOccupied.push(station);
+		schedule[station.name][tableIndex] = employee.employee;
+	});
+
+	//FOURTH
+	employees.forEach((employee, index) => {
+		if (employee.shift === 'EVENING') {
+			let station = stations[index % 3];
+			let tableIndex = findFirstEmpty(
+				schedule[station.name],
+				WORKSTAGESPANS.FOURTH
+			);
+			if (_.isUndefined(tableIndex)) {
+				station = stations[index % 4];
+				tableIndex = findFirstEmpty(
+					schedule[station.name],
+					WORKSTAGESPANS.FOURTH
 				);
-			array[index] = randomEmployee;
-		});
-	} */
+			}
+
+			employee.stationsOccupied.push(station);
+			schedule[station.name][tableIndex] = employee.employee;
+		}
+	});
 
 	return schedule;
 };
@@ -133,14 +116,23 @@ function findFirstEmpty(
 
 function returnDifferentStation(
 	stations: Station[],
-	previousStation: Station
+	previousStation: Station,
+	isThirdShift?: boolean
 ): Station {
-	if (previousStation.name !== 'KINEZA') return stations[0];
-	//ZRÓ TAK, ŻE ZWRÓCI KINEZĘ JEŻELI BĘDĄ TAM MIEJSCA
-	const randomIndex = _.random(0, 2);
-	const newStation = stations[randomIndex];
-
-	return newStation.name !== previousStation.name
-		? newStation
-		: returnDifferentStation(stations, previousStation);
+	switch (previousStation.name) {
+		case 'KINEZA':
+			return _.sample(
+				isThirdShift
+					? [stations[1], stations[2], stations[3]]
+					: [stations[1], stations[2]]
+			);
+		case 'FIZYKO':
+			return isThirdShift ? stations[0] : _.sample([stations[0], stations[2]]);
+		case 'MASAZ':
+			return isThirdShift ? stations[0] : _.sample([stations[0], stations[1]]);
+		case 'WIZYTY':
+			return _.sample([stations[0], stations[1], stations[2]]);
+		default:
+			break;
+	}
 }
