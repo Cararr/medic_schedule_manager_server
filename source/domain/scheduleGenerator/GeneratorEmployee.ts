@@ -9,11 +9,11 @@ export enum shift {
 export class GeneratorEmployee {
 	employee: Employee;
 	shift: shift;
-	stationsOccupied: Station[];
+	stationsTaken: Station[];
 
 	constructor(employee: Employee, shift: shift) {
 		this.employee = employee;
 		this.shift = shift;
-		this.stationsOccupied = [];
+		this.stationsTaken = [];
 	}
 }
