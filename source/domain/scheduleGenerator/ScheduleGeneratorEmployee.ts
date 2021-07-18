@@ -6,7 +6,7 @@ export enum shift {
 	EVENING = 'EVENING',
 }
 
-export class GeneratorEmployee {
+export class ScheduleGeneratorEmployee {
 	employee: Employee;
 	shift: shift;
 	stationsTaken: Station[];
