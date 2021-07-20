@@ -3,6 +3,7 @@ import { Station } from '../entities/Station';
 import { dailySchedule } from '../../../typeDefs/types';
 import { ScheduleGeneratorEmployee, shift } from './ScheduleGeneratorEmployee';
 import _ from 'lodash';
+import { IsNull } from 'typeorm';
 
 const WORKSTAGESPANS = {
 	FIRST: [0, 4],
@@ -13,11 +14,22 @@ const WORKSTAGESPANS = {
 
 export const scheduleGenerator = (
 	employeesList: Employee[],
-	stations: Station[]
+	stations: Station[],
+	previousMorningEmployees: Employee[]
 ): dailySchedule => {
 	const employees: ScheduleGeneratorEmployee[] = [];
-	_.shuffle(employeesList).forEach((employee, index) => {
-		const shiftType: shift = index < 5 ? shift.MORNING : shift.EVENING;
+
+	const adjustedEmployeeList = _.compact(
+		employeesList
+			.filter(
+				(employee) =>
+					!previousMorningEmployees.some((emp) => emp?.id === employee.id)
+			)
+			.concat(_.shuffle(previousMorningEmployees))
+	);
+
+	adjustedEmployeeList.forEach((employee, index) => {
+		const shiftType = index < 5 ? shift.MORNING : shift.EVENING;
 		employees.push(new ScheduleGeneratorEmployee(employee, shiftType));
 	});
 
@@ -49,7 +61,7 @@ export const scheduleGenerator = (
 
 	return completeSchedule !== 0
 		? completeSchedule
-		: scheduleGenerator(employeesList, stations);
+		: scheduleGenerator(employeesList, stations, previousMorningEmployees);
 };
 
 function updateSchedule(

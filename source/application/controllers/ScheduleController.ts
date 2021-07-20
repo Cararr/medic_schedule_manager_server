@@ -159,9 +159,33 @@ export class ScheduleController {
 
 	static generate = async (req: Request, res: Response, next: NextFunction) => {
 		try {
+			if (
+				typeof req.query.date !== 'string' ||
+				!validateDateFormat(req.query.date)
+			)
+				return res.status(400).send(new BadRequestError('Wrong date format.'));
+
+			let date = new Date(req.query.date);
+			do {
+				date = new Date(date.setDate(date.getDate() - 1));
+			} while ([0, 6].includes(date.getDay()));
+
+			const previousCells = await getRepository(ScheduleCell).find({
+				relations: ['employeeAtCell', 'station'],
+				where: { date },
+			});
+
+			const previousMorningEmployees = previousCells
+				.filter(
+					(cell) =>
+						[0, 4].includes(cell.orderInTable) && cell.station.name !== 'WIZYTY'
+				)
+				.map((cell) => cell.employeeAtCell);
+
 			const generatedSchedule = scheduleGenerator(
 				req.body.employees,
-				orderStations(req.body.stations)
+				orderStations(req.body.stations),
+				previousMorningEmployees
 			);
 			res.send({ generatedSchedule });
 		} catch (error) {
