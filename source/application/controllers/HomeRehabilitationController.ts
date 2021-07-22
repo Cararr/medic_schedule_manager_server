@@ -69,11 +69,11 @@ export class HomeRehabilitationController {
 		try {
 			const homeRehabilitationsRepository = getRepository(HomeRehabilitation);
 
-			const homeRehabilitation = await homeRehabilitationsRepository.findOne(
+			const oldHomeRehabilitation = await homeRehabilitationsRepository.findOne(
 				req.params.id
 			);
 
-			if (!homeRehabilitation)
+			if (!oldHomeRehabilitation)
 				return res
 					.status(404)
 					.send(new NotFoundError('Home Rehabilitation not found.'));
@@ -85,16 +85,17 @@ export class HomeRehabilitationController {
 			if (error) return res.status(400).send(error);
 
 			await homeRehabilitationsRepository.update(
-				homeRehabilitation.id,
+				oldHomeRehabilitation.id,
 				req.body.homeRehabilitation
 			);
 
-			const updatedHomeRehabilitation =
-				await homeRehabilitationsRepository.findOne(homeRehabilitation.id);
+			const homeRehabilitation = await homeRehabilitationsRepository.findOne(
+				oldHomeRehabilitation.id
+			);
 
 			res.send({
 				message: 'Updated.',
-				homeRehabilitation: updatedHomeRehabilitation,
+				homeRehabilitation,
 			});
 		} catch (error) {
 			next(error);

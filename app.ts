@@ -10,7 +10,9 @@ import { workStageSpanRouter } from './source/application/routes/workStageSpanRo
 import { scheduleRouter } from './source/application/routes/scheduleRouter';
 import { homeRehabilitationRouter } from './source/application/routes/homeRehabilitationRouter';
 import { loginRouter } from './source/application/routes/loginRouter';
+import { commentRouter } from './source/application/routes/commentRouter';
 import { PORT } from './configs/config.json';
+
 const server = createExpressServer({
 	// controllers:[],
 	cors: true,
@@ -24,7 +26,8 @@ server.use(
 	employeeRouter,
 	workStageSpanRouter,
 	homeRehabilitationRouter,
-	scheduleRouter
+	scheduleRouter,
+	commentRouter
 );
 
 server.listen(PORT, async () => {
