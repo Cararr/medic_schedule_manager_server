@@ -72,6 +72,23 @@ export class CommentController {
 		}
 	};
 
+	static delete = async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const commentsRepository = getRepository(Comment);
+
+			const commentToRemove = await commentsRepository.findOne(req.params.id);
+
+			if (!commentToRemove)
+				return res.status(404).send(new NotFoundError('Comment not found.'));
+
+			await commentsRepository.remove(commentToRemove);
+
+			res.status(204).send();
+		} catch (error) {
+			next(error);
+		}
+	};
+
 	static verifyPayload = async (
 		req: Request,
 		res: Response,

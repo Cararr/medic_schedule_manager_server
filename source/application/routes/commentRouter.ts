@@ -18,3 +18,5 @@ commentRouter.put(
 	CommentController.verifyPayload,
 	CommentController.update
 );
+
+commentRouter.delete('/comments/:id', validateToken, CommentController.delete);
