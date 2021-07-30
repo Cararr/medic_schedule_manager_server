@@ -7,15 +7,19 @@ export class Vacation {
 	public id: number;
 
 	@Column({ type: 'date' })
-	public date: string;
+	public from: string;
+
+	@Column({ type: 'date' })
+	public to: string;
 
 	@ManyToOne(() => Employee, (employee) => employee.vacations, {
 		nullable: false,
 	})
 	public employee: Employee;
 
-	constructor(date: string, employee: Employee) {
-		this.date = date;
+	constructor(from: string, to: string, employee: Employee) {
+		this.from = from;
+		this.to = to;
 		this.employee = employee;
 	}
 }

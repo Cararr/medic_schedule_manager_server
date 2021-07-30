@@ -1,5 +1,5 @@
 {
-	"name": "smbackend",
+	"name": "medic-schedule-manager-node",
 	"version": "1.0.0",
 	"description": "",
 	"main": "app.js",
