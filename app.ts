@@ -5,17 +5,18 @@ import { createConnection, getConnectionOptions } from 'typeorm';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { createExpressServer } from 'routing-controllers';
 import { logger } from './source/infrastructure/logger';
+import { loginRouter } from './source/application/routes/loginRouter';
 import { employeeRouter } from './source/application/routes/employeeRouter';
 import { workStageSpanRouter } from './source/application/routes/workStageSpanRouter';
 import { scheduleRouter } from './source/application/routes/scheduleRouter';
 import { homeRehabilitationRouter } from './source/application/routes/homeRehabilitationRouter';
-import { loginRouter } from './source/application/routes/loginRouter';
 import { commentRouter } from './source/application/routes/commentRouter';
+import { vacationRouter } from './source/application/routes/vacationRouter';
 import { PORT } from './configs/config.json';
 
 const server = createExpressServer({
 	// controllers:[],
-	cors: true,
+	// cors: true,
 });
 
 server.use(express.json(), morgan('dev'), cookieParser());
@@ -27,7 +28,8 @@ server.use(
 	workStageSpanRouter,
 	homeRehabilitationRouter,
 	scheduleRouter,
-	commentRouter
+	commentRouter,
+	vacationRouter
 );
 
 server.listen(PORT, async () => {

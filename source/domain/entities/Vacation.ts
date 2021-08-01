@@ -22,4 +22,4 @@ export class Vacation {
 		this.to = to;
 		this.employee = employee;
 	}
-}
+} //

@@ -3,8 +3,9 @@ import { getRepository } from 'typeorm';
 import { Employee } from '../../domain/entities/Employee';
 import { TOKEN_EXPIRE_TIME } from '../../../configs/config.json';
 import { BadRequestError, UnauthorizedError } from 'routing-controllers';
-import bcrypt from 'bcryptjs';
 import createJWT from '../../../util/createJWT';
+import bcrypt from 'bcryptjs';
+import _ from 'lodash';
 
 export class LoginController {
 	static login = async (req: Request, res: Response, next: NextFunction) => {
@@ -13,7 +14,7 @@ export class LoginController {
 
 			const user = await getRepository(Employee).findOne({
 				select: ['firstName', 'lastName', 'password', 'id', 'role'],
-				where: { lastName: lastName },
+				where: { lastName: _.trim(lastName) },
 			});
 
 			if (!user)

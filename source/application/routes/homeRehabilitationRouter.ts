@@ -17,7 +17,7 @@ homeRehabilitationRouter.post(
 	validateToken,
 	verifyPermissions,
 	preloadStationsAndEmployees,
-	HomeRehabilitationController.verifyCreatePayload,
+	HomeRehabilitationController.verifyPayload,
 	HomeRehabilitationController.create
 );
 

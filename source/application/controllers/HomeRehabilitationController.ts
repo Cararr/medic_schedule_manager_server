@@ -117,13 +117,13 @@ export class HomeRehabilitationController {
 		res.status(204).send();
 	};
 
-	static verifyCreatePayload = async (
+	static verifyPayload = async (
 		req: Request,
 		res: Response,
 		next: NextFunction
 	) => {
 		if (!validateDateFormat(req.body.from) || !validateDateFormat(req.body.to))
-			return new BadRequestError('Wrong date format.');
+			return res.status(400).send(new BadRequestError('Invalid date.'));
 
 		const error = verifyHomeRehabilitation(
 			req.body.homeRehabilitation,
@@ -144,9 +144,9 @@ const verifyHomeRehabilitation = (
 			'Request is missing homeRehabilitation property.'
 		);
 	if (!validateTimeFormat(homeRehabilitation.startTime))
-		return new BadRequestError('Wrong time format.');
+		return new BadRequestError('Invalid time value.');
 	if (typeof homeRehabilitation.patient !== 'string')
-		return new BadRequestError('Wrong patient format.');
+		return new BadRequestError('Invalid patient value.');
 	if (!homeRehabilitation.employee)
 		return new BadRequestError('No Employee included.');
 	if (
