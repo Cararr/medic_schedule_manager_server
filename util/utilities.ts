@@ -1,5 +1,11 @@
 import { Station } from '../source/domain/entities/Station';
 
+/**
+ *
+ * @param date expecting string with format YYYY-MM-DD
+ * @returns
+ */
+
 export function validateDateFormat(date: any): boolean {
 	return /^\d{4}[-](0?[1-9]|1[012])[-](0?[1-9]|[12][0-9]|3[01])$/.test(date);
 }
@@ -45,4 +51,8 @@ export function orderStations(stations: Station[]): Station[] {
 		}
 	}
 	return orderedStations;
+}
+
+export function validateYear(year: any): boolean {
+	return typeof year === 'string' && /^(20)\d{2}$/.test(year);
 }

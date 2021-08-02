@@ -154,7 +154,7 @@ const verifyHomeRehabilitation = (
 			(emp: Employee) => emp.id === homeRehabilitation.employee.id
 		)
 	)
-		return new BadRequestError('No employee match.');
+		return new BadRequestError('Employee not exist.');
 
 	return false;
 };

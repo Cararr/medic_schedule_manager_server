@@ -27,7 +27,9 @@ export class CommentController {
 	static create = async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const commentsRepository = getRepository(Comment);
-			const oldComment = await commentsRepository.findOne(req.body.comment);
+			const oldComment = await commentsRepository.findOne({
+				where: { date: req.body.comment.date },
+			});
 
 			if (oldComment)
 				return res
