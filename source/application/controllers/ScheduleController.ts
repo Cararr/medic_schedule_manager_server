@@ -10,7 +10,7 @@ import {
 	formatDateString,
 	orderStations,
 } from '../../../util/utilities';
-import { dailyDateSchedule } from '../../../typeDefs/types';
+import { dailyDateSchedule, StationName } from '../../../typeDefs/types';
 import { NotFoundError, BadRequestError } from 'routing-controllers';
 
 export class ScheduleController {
@@ -178,7 +178,8 @@ export class ScheduleController {
 			const previousMorningEmployees = previousCells
 				.filter(
 					(cell) =>
-						[0, 4].includes(cell.orderInTable) && cell.station.name !== 'WIZYTY'
+						[0, 4].includes(cell.orderInTable) &&
+						cell.station.name !== StationName.WIZYTY
 				)
 				.map((cell) => cell.employeeAtCell);
 

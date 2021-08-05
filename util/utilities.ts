@@ -1,11 +1,11 @@
 import { Station } from '../source/domain/entities/Station';
+import { StationName } from '../typeDefs/types';
 
 /**
  *
  * @param date expecting string with format YYYY-MM-DD
  * @returns
  */
-
 export function validateDateFormat(date: any): boolean {
 	return /^\d{4}[-](0?[1-9]|1[012])[-](0?[1-9]|[12][0-9]|3[01])$/.test(date);
 }
@@ -34,16 +34,16 @@ export function orderStations(stations: Station[]): Station[] {
 
 	for (const station of stations) {
 		switch (station.name) {
-			case 'KINEZA':
+			case StationName.KINEZA:
 				orderedStations[0] = station;
 				break;
-			case 'FIZYKO':
+			case StationName.FIZYKO:
 				orderedStations[1] = station;
 				break;
-			case 'MASAZ':
+			case StationName.MASAZ:
 				orderedStations[2] = station;
 				break;
-			case 'WIZYTY':
+			case StationName.WIZYTY:
 				orderedStations[3] = station;
 				break;
 			default:

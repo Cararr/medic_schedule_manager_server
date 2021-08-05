@@ -1,17 +1,17 @@
 import { Employee } from '../entities/Employee';
 import { Station } from '../entities/Station';
 
-export enum shift {
+export enum Shift {
 	MORNING = 'MORNING',
 	EVENING = 'EVENING',
 }
 
 export class ScheduleGeneratorEmployee {
 	employee: Employee;
-	shift: shift;
+	shift: Shift;
 	stationsTaken: Station[];
 
-	constructor(employee: Employee, shift: shift) {
+	constructor(employee: Employee, shift: Shift) {
 		this.employee = employee;
 		this.shift = shift;
 		this.stationsTaken = [];

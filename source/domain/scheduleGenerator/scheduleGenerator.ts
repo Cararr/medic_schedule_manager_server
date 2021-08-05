@@ -1,9 +1,8 @@
 import { Employee } from '../entities/Employee';
 import { Station } from '../entities/Station';
-import { dailySchedule } from '../../../typeDefs/types';
-import { ScheduleGeneratorEmployee, shift } from './ScheduleGeneratorEmployee';
+import { dailySchedule, StationName } from '../../../typeDefs/types';
+import { ScheduleGeneratorEmployee, Shift } from './ScheduleGeneratorEmployee';
 import _ from 'lodash';
-import { IsNull } from 'typeorm';
 
 const WORKSTAGESPANS = {
 	FIRST: [0, 4],
@@ -11,6 +10,8 @@ const WORKSTAGESPANS = {
 	THIRD: [2, 6, 9, 11, 13],
 	FOURTH: [3, 7],
 };
+
+// NIE DZIAŁA KIEDY W POPRZEDNI GRAFIK MA PRZEŁADOWANYCH PRACOWNIKÓW
 
 export const scheduleGenerator = (
 	employeesList: Employee[],
@@ -29,7 +30,7 @@ export const scheduleGenerator = (
 	);
 
 	adjustedEmployeeList.forEach((employee, index) => {
-		const shiftType = index < 5 ? shift.MORNING : shift.EVENING;
+		const shiftType = index < 5 ? Shift.MORNING : Shift.EVENING;
 		employees.push(new ScheduleGeneratorEmployee(employee, shiftType));
 	});
 
@@ -37,26 +38,32 @@ export const scheduleGenerator = (
 	for (const station of stations) {
 		schedule[station.name] = new Array(station.numberOfCellsInTable).fill(null);
 	}
+
 	//Fill first and secound workStageSpan
 	employees.forEach((employee) => {
-		if (employee.shift === 'MORNING')
+		if (employee.shift === Shift.MORNING)
 			schedule = updateSchedule(stations, employee, schedule, 1);
 
 		schedule = updateSchedule(stations, employee, schedule, 2);
 	});
+
 	//Fill third workStageSpan
-	while (_.isNull(schedule['MASAZ'][2]) || _.isNull(schedule['WIZYTY'][0])) {
+	while (
+		_.isNull(schedule[StationName.MASAZ][2]) ||
+		_.isNull(schedule[StationName.WIZYTY][0])
+	) {
 		clearThirdShift(schedule);
 		employees.forEach((employee) => {
 			undoThirdStationTaken(employee);
 			schedule = updateSchedule(stations, employee, schedule, 3);
 		});
 	}
+
 	//Fourth
 	const completeSchedule = assignFourthShift(
 		schedule,
 		stations,
-		employees.filter((emp) => emp.shift === 'EVENING')
+		employees.filter((emp) => emp.shift === Shift.EVENING)
 	);
 
 	return completeSchedule !== 0
@@ -79,88 +86,88 @@ function updateSchedule(
 
 	let timesFailed = 0; //if it is not possible to change station it shoult repeat the station
 
-	if (shift === 1)
-		while (_.isUndefined(tableIndex)) {
-			nextStation = stations[_.random(2)];
+	while (_.isUndefined(tableIndex)) {
+		switch (shift) {
+			case 1:
+				nextStation = stations[_.random(2)];
 
-			tableIndex = findFirstEmpty(
-				updatedSchedule[nextStation.name],
-				WORKSTAGESPANS.FIRST
-			);
-		}
-	else if (shift === 2)
-		while (_.isUndefined(tableIndex)) {
-			if (employee.stationsTaken.includes(masazStation))
-				nextStation = stations[_.random(1)];
-			else
-				nextStation =
-					previousStation === fizykoStation
-						? _.sample([kinezaStation, masazStation])
-						: stations[_.random(2)];
-
-			tableIndex = findFirstEmpty(
-				updatedSchedule[nextStation.name],
-				WORKSTAGESPANS.SECOND
-			);
-		}
-	else if (shift === 3)
-		while (_.isUndefined(tableIndex)) {
-			if (employee.stationsTaken.includes(masazStation)) {
-				nextStation = _.sample(
-					previousStation === fizykoStation
-						? [kinezaStation, wizytyStation]
-						: [kinezaStation, fizykoStation, wizytyStation]
+				tableIndex = findFirstEmptyCell(
+					updatedSchedule[nextStation.name],
+					WORKSTAGESPANS.FIRST
 				);
-			} else if (previousStation === fizykoStation && timesFailed <= 5) {
-				nextStation = _.sample([kinezaStation, masazStation, wizytyStation]);
-				timesFailed++;
-			} else if (
-				employee.stationsTaken[0] === kinezaStation &&
-				employee.stationsTaken[1] === kinezaStation
-			) {
-				nextStation = stations[_.random(1, 3)];
-			} else {
-				nextStation = stations[_.random(3)];
-			}
+				break;
+			case 2:
+				if (employee.stationsTaken.includes(masazStation))
+					nextStation = stations[_.random(1)];
+				else
+					nextStation =
+						previousStation === fizykoStation
+							? _.sample([kinezaStation, masazStation])
+							: stations[_.random(2)];
 
-			tableIndex = findFirstEmpty(
-				updatedSchedule[nextStation.name],
-				nextStation === wizytyStation
-					? WORKSTAGESPANS.FIRST
-					: WORKSTAGESPANS.THIRD
-			);
+				tableIndex = findFirstEmptyCell(
+					updatedSchedule[nextStation.name],
+					WORKSTAGESPANS.SECOND
+				);
+				break;
+			case 3:
+				if (employee.stationsTaken.includes(masazStation)) {
+					nextStation = _.sample(
+						previousStation === fizykoStation
+							? [kinezaStation, wizytyStation]
+							: [kinezaStation, fizykoStation, wizytyStation]
+					);
+				} else if (previousStation === fizykoStation && timesFailed <= 5) {
+					nextStation = _.sample([kinezaStation, masazStation, wizytyStation]);
+					timesFailed++;
+				} else if (
+					employee.stationsTaken[0] === kinezaStation &&
+					employee.stationsTaken[1] === kinezaStation
+				) {
+					nextStation = stations[_.random(1, 3)];
+				} else {
+					nextStation = stations[_.random(3)];
+				}
+				tableIndex = findFirstEmptyCell(
+					updatedSchedule[nextStation.name],
+					nextStation === wizytyStation
+						? WORKSTAGESPANS.FIRST
+						: WORKSTAGESPANS.THIRD
+				);
+				break;
+			case 4:
+				if (
+					employee.stationsTaken[0] === kinezaStation &&
+					employee.stationsTaken[1] === kinezaStation
+				) {
+					nextStation = stations[_.random(1, 2)];
+				} else if (employee.stationsTaken.includes(masazStation)) {
+					nextStation = _.sample([kinezaStation, fizykoStation]);
+				} else if (
+					employee.stationsTaken[0] === fizykoStation &&
+					employee.stationsTaken[1] === fizykoStation
+				) {
+					nextStation = _.sample([kinezaStation, masazStation]);
+				} else {
+					nextStation = stations[_.random(0, 2)];
+				}
+				timesFailed++;
+				tableIndex = findFirstEmptyCell(
+					updatedSchedule[nextStation.name],
+					WORKSTAGESPANS.FOURTH
+				);
+				break;
+			default:
+				return;
 		}
-	else if (shift === 4)
-		while (_.isUndefined(tableIndex)) {
-			// if (timesFailed > 10) return schedule;
-			if (
-				employee.stationsTaken[0] === kinezaStation &&
-				employee.stationsTaken[1] === kinezaStation
-			) {
-				nextStation = stations[_.random(1, 2)];
-			} else if (employee.stationsTaken.includes(masazStation)) {
-				nextStation = _.sample([kinezaStation, fizykoStation]);
-			} else if (
-				employee.stationsTaken[0] === fizykoStation &&
-				employee.stationsTaken[1] === fizykoStation
-			) {
-				nextStation = _.sample([kinezaStation, masazStation]);
-			} else {
-				nextStation = stations[_.random(0, 2)];
-			}
-			timesFailed++;
-			tableIndex = findFirstEmpty(
-				updatedSchedule[nextStation.name],
-				WORKSTAGESPANS.FOURTH
-			);
-		}
+	}
 
 	employee.stationsTaken.push(nextStation);
 	updatedSchedule[nextStation.name][tableIndex] = employee.employee;
 	return updatedSchedule;
 }
 
-function findFirstEmpty(
+function findFirstEmptyCell(
 	schedule: (Employee | null)[],
 	cellNumbers: number[]
 ): number {
@@ -170,29 +177,29 @@ function findFirstEmpty(
 }
 
 function undoThirdStationTaken(employee: ScheduleGeneratorEmployee) {
-	if (employee.shift === 'MORNING' && employee.stationsTaken.length > 2)
+	if (employee.shift === Shift.MORNING && employee.stationsTaken.length > 2)
 		employee.stationsTaken.splice(2);
-	if (employee.shift === 'EVENING') employee.stationsTaken.splice(1);
+	if (employee.shift === Shift.EVENING) employee.stationsTaken.splice(1);
 }
 
 function clearThirdShift(schedule: dailySchedule) {
 	for (const station in schedule) {
 		if (Object.prototype.hasOwnProperty.call(schedule, station)) {
 			switch (station) {
-				case 'KINEZA':
+				case StationName.KINEZA:
 					WORKSTAGESPANS.THIRD.forEach((index) => {
 						schedule[station][index] = null;
 					});
 					break;
-				case 'FIZYKO':
+				case StationName.FIZYKO:
 					[2, 6, 9].forEach((index) => {
 						schedule[station][index] = null;
 					});
 					break;
-				case 'MASAZ':
+				case StationName.MASAZ:
 					schedule[station][2] = null;
 					break;
-				case 'WIZYTY':
+				case StationName.WIZYTY:
 					schedule[station][0] = null;
 					break;
 			}
@@ -221,7 +228,7 @@ function assignFourthShift(
 		.forEach((employee) => {
 			while (_.isUndefined(tableIndex)) {
 				nextStation = _.sample([fizykoStation, masazStation]);
-				tableIndex = findFirstEmpty(
+				tableIndex = findFirstEmptyCell(
 					completeSchedule[nextStation.name],
 					WORKSTAGESPANS.FOURTH
 				);
@@ -239,7 +246,7 @@ function assignFourthShift(
 		.forEach((employee) => {
 			while (_.isUndefined(tableIndex)) {
 				nextStation = _.sample([kinezaStation, masazStation]);
-				tableIndex = findFirstEmpty(
+				tableIndex = findFirstEmptyCell(
 					completeSchedule[nextStation.name],
 					WORKSTAGESPANS.FOURTH
 				);
@@ -253,7 +260,7 @@ function assignFourthShift(
 		.forEach((employee) => {
 			while (_.isUndefined(tableIndex)) {
 				nextStation = _.sample([kinezaStation, fizykoStation]);
-				tableIndex = findFirstEmpty(
+				tableIndex = findFirstEmptyCell(
 					completeSchedule[nextStation.name],
 					WORKSTAGESPANS.FOURTH
 				);
@@ -271,7 +278,7 @@ function assignFourthShift(
 		.forEach((employee) => {
 			while (_.isUndefined(tableIndex)) {
 				nextStation = _.sample([kinezaStation, fizykoStation, masazStation]);
-				tableIndex = findFirstEmpty(
+				tableIndex = findFirstEmptyCell(
 					completeSchedule[nextStation.name],
 					WORKSTAGESPANS.FOURTH
 				);
@@ -289,9 +296,9 @@ function assignFourthShift(
 
 function nameStations(stations: Station[]): Station[] {
 	return [
-		stations.find((station) => station.name === 'KINEZA'),
-		stations.find((station) => station.name === 'FIZYKO'),
-		stations.find((station) => station.name === 'MASAZ'),
-		stations.find((station) => station.name === 'WIZYTY'),
+		stations.find((station) => station.name === StationName.KINEZA),
+		stations.find((station) => station.name === StationName.FIZYKO),
+		stations.find((station) => station.name === StationName.MASAZ),
+		stations.find((station) => station.name === StationName.WIZYTY),
 	];
 }

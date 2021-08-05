@@ -1,12 +1,16 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { ScheduleCell } from './ScheduleCell';
+import { StationName } from '../../../typeDefs/types';
 
 @Entity()
 export class Station {
 	@PrimaryGeneratedColumn()
 	public id: number;
 
-	@Column()
+	@Column({
+		type: 'enum',
+		enum: StationName,
+	})
 	public name: string;
 
 	@Column()

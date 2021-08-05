@@ -12,3 +12,9 @@ export enum employeeRole {
 	BOSS = 'BOSS',
 	EMPLOYEE = 'EMPLOYEE',
 }
+export enum StationName {
+	KINEZA = 'KINEZA',
+	FIZYKO = 'FIZYKO',
+	MASAZ = 'MASAZ',
+	WIZYTY = 'WIZYTY',
+}
