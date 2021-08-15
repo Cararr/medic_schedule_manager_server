@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { BadRequestError } from 'routing-controllers';
+import { BadRequestError, NotFoundError } from 'routing-controllers';
 import { Between, getRepository } from 'typeorm';
 import { validateDateFormat, validateYear } from '../../../util/utilities';
 import { Employee } from '../../domain/entities/Employee';
@@ -67,7 +67,37 @@ export class VacationController {
 			)
 		)
 			return res.status(400).send(new BadRequestError('Employee not exist.'));
-
 		next();
+	};
+
+	static update = async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const vacationRepository = getRepository(Vacation);
+			const vacation = await vacationRepository.findOne(req.params.id, {
+				relations: ['employee'],
+			});
+			if (!vacation)
+				return res.status(404).send(new NotFoundError('Vacation not found.'));
+
+			vacationRepository.merge(vacation, req.body.vacation);
+			await vacationRepository.update(req.params.id, vacation);
+
+			res.send({
+				message: 'Updated.',
+				vacation,
+			});
+		} catch (error) {
+			next(error);
+		}
+	};
+
+	static delete = async (req: Request, res: Response, next: NextFunction) => {
+		const vacationRepository = getRepository(Vacation);
+		const vacation = await vacationRepository.findOne(req.params.id);
+		if (!vacation)
+			return res.status(404).send(new NotFoundError('Vacation not found.'));
+
+		await vacationRepository.remove(vacation);
+		res.status(204).send();
 	};
 }

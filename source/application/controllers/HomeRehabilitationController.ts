@@ -33,7 +33,7 @@ export class HomeRehabilitationController {
 
 	static create = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const homeRehabilitationsRepository = getRepository(HomeRehabilitation);
+			const homeRehabilitationRepository = getRepository(HomeRehabilitation);
 
 			const dates: string[] = [];
 			let currentDate = new Date(req.body.from);
@@ -49,14 +49,14 @@ export class HomeRehabilitationController {
 			const createdHRs: HomeRehabilitation[] = [];
 
 			for (const date of dates) {
-				const newHR = homeRehabilitationsRepository.create({
+				const newHR = homeRehabilitationRepository.create({
 					...homeRehabilitation,
 					date,
 				});
 				createdHRs.push(newHR);
 			}
 
-			const response = await homeRehabilitationsRepository.save(createdHRs);
+			const response = await homeRehabilitationRepository.save(createdHRs);
 			res
 				.status(201)
 				.send({ message: 'Created.', homeRehabilitations: response });
@@ -67,13 +67,13 @@ export class HomeRehabilitationController {
 
 	static update = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const homeRehabilitationsRepository = getRepository(HomeRehabilitation);
+			const homeRehabilitationRepository = getRepository(HomeRehabilitation);
 
-			const oldHomeRehabilitation = await homeRehabilitationsRepository.findOne(
+			const homeRehabilitation = await homeRehabilitationRepository.findOne(
 				req.params.id
 			);
 
-			if (!oldHomeRehabilitation)
+			if (!homeRehabilitation)
 				return res
 					.status(404)
 					.send(new NotFoundError('Home Rehabilitation not found.'));
@@ -84,13 +84,13 @@ export class HomeRehabilitationController {
 			);
 			if (error) return res.status(400).send(error);
 
-			await homeRehabilitationsRepository.update(
-				oldHomeRehabilitation.id,
+			homeRehabilitationRepository.merge(
+				homeRehabilitation,
 				req.body.homeRehabilitation
 			);
-
-			const homeRehabilitation = await homeRehabilitationsRepository.findOne(
-				oldHomeRehabilitation.id
+			await homeRehabilitationRepository.update(
+				homeRehabilitation.id,
+				homeRehabilitation
 			);
 
 			res.send({
@@ -103,8 +103,8 @@ export class HomeRehabilitationController {
 	};
 
 	static delete = async (req: Request, res: Response, next: NextFunction) => {
-		const homeRehabilitationsRepository = getRepository(HomeRehabilitation);
-		const homeRehabilitation = await homeRehabilitationsRepository.findOne(
+		const homeRehabilitationRepository = getRepository(HomeRehabilitation);
+		const homeRehabilitation = await homeRehabilitationRepository.findOne(
 			req.params.id
 		);
 
@@ -113,7 +113,7 @@ export class HomeRehabilitationController {
 				.status(404)
 				.send(new NotFoundError('Home Rehabilitation not found.'));
 
-		await homeRehabilitationsRepository.remove(homeRehabilitation);
+		await homeRehabilitationRepository.remove(homeRehabilitation);
 		res.status(204).send();
 	};
 
