@@ -12,7 +12,9 @@ import { scheduleRouter } from './source/application/routes/scheduleRouter';
 import { homeRehabilitationRouter } from './source/application/routes/homeRehabilitationRouter';
 import { commentRouter } from './source/application/routes/commentRouter';
 import { vacationRouter } from './source/application/routes/vacationRouter';
-import { PORT } from './configs/config.json';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const server = createExpressServer({
 	// controllers:[],
@@ -31,6 +33,8 @@ server.use(
 	commentRouter,
 	vacationRouter
 );
+
+const PORT = process.env.PORT || 4000;
 
 server.listen(PORT, async () => {
 	const connectionOptions = await getConnectionOptions();

@@ -1,11 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
 import { getRepository } from 'typeorm';
 import { Employee } from '../../domain/entities/Employee';
-import { TOKEN_EXPIRE_TIME } from '../../../configs/config.json';
 import { BadRequestError, UnauthorizedError } from 'routing-controllers';
 import createJWT from '../../../util/createJWT';
 import bcrypt from 'bcryptjs';
 import _ from 'lodash';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 export class LoginController {
 	static login = async (req: Request, res: Response, next: NextFunction) => {
@@ -29,7 +31,7 @@ export class LoginController {
 				createJWT(user, (error, token) => {
 					if (error) next(error);
 					else if (token) {
-						const cookieMaxAge = TOKEN_EXPIRE_TIME * 1000;
+						const cookieMaxAge = Number(process.env.TOKEN_EXPIRE_TIME) * 1000;
 						res
 							.cookie('token', token, {
 								httpOnly: true,

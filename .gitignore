@@ -1,6 +1,7 @@
 node_modules
 dist
 ormconfig.json
+ormconfig.ts
 requester.REST
 log
-notes.txt
+.env

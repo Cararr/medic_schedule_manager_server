@@ -1,10 +1,8 @@
 import jwt from 'jsonwebtoken';
-import {
-	TOKEN_EXPIRE_TIME,
-	TOKEN_ISSUER,
-	TOKEN_SECRET,
-} from '../configs/config.json';
 import { Employee } from '../source/domain/entities/Employee';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const createJWT = (
 	employee: Employee,
@@ -13,10 +11,10 @@ const createJWT = (
 	try {
 		jwt.sign(
 			{ employee },
-			TOKEN_SECRET,
+			process.env.TOKEN_SECRET,
 			{
-				issuer: TOKEN_ISSUER,
-				expiresIn: TOKEN_EXPIRE_TIME,
+				issuer: process.env.TOKEN_ISSUER,
+				expiresIn: Number(process.env.TOKEN_EXPIRE_TIME),
 			},
 			(error, token) => {
 				if (error) {
