@@ -175,18 +175,20 @@ export class ScheduleController {
 				where: { date },
 			});
 
-			const previousMorningEmployees = previousCells
+			// NIE DZIAŁA KIEDY W POPRZEDNI GRAFIK MA PRZEŁADOWANYCH PRACOWNIKÓW
+
+			/* 	const previousMorningEmployees = previousCells
 				.filter(
 					(cell) =>
 						[0, 4].includes(cell.orderInTable) &&
 						cell.station.name !== StationName.WIZYTY
 				)
-				.map((cell) => cell.employeeAtCell);
+				.map((cell) => cell.employeeAtCell); */
 
 			const generatedSchedule = scheduleGenerator(
 				req.body.employees,
-				orderStations(req.body.stations),
-				previousMorningEmployees
+				orderStations(req.body.stations)
+				// previousMorningEmployees
 			);
 			res.send({ generatedSchedule });
 		} catch (error) {

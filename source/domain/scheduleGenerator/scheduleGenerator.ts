@@ -15,21 +15,21 @@ const WORKSTAGESPANS = {
 
 export const scheduleGenerator = (
 	employeesList: Employee[],
-	stations: Station[],
-	previousMorningEmployees: Employee[]
+	stations: Station[]
+	// previousMorningEmployees: Employee[]
 ): dailySchedule => {
 	const employees: ScheduleGeneratorEmployee[] = [];
 
-	const adjustedEmployeeList = _.compact(
+	/* 	const adjustedEmployeeList = _.compact(
 		employeesList
 			.filter(
 				(employee) =>
 					!previousMorningEmployees.some((emp) => emp?.id === employee.id)
 			)
 			.concat(_.shuffle(previousMorningEmployees))
-	);
+	); */
 
-	adjustedEmployeeList.forEach((employee, index) => {
+	employeesList.forEach((employee, index) => {
 		const shiftType = index < 5 ? Shift.MORNING : Shift.EVENING;
 		employees.push(new ScheduleGeneratorEmployee(employee, shiftType));
 	});
@@ -68,7 +68,10 @@ export const scheduleGenerator = (
 
 	return completeSchedule !== 0
 		? completeSchedule
-		: scheduleGenerator(employeesList, stations, previousMorningEmployees);
+		: scheduleGenerator(
+				employeesList,
+				stations /* , previousMorningEmployees */
+		  );
 };
 
 function updateSchedule(
