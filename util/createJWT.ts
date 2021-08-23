@@ -1,9 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { Employee } from '../source/domain/entities/Employee';
 
-import dotenv from 'dotenv';
-dotenv.config();
-
 const createJWT = (
 	employee: Employee,
 	callback: (error: Error | null, token: string | null) => void

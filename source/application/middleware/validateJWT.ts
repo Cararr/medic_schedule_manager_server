@@ -2,9 +2,6 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { UnauthorizedError } from 'routing-controllers';
 
-import dotenv from 'dotenv';
-dotenv.config();
-
 const validateToken = async (
 	req: Request,
 	res: Response,

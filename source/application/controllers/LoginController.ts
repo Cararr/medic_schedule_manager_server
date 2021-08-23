@@ -5,9 +5,6 @@ import { BadRequestError, UnauthorizedError } from 'routing-controllers';
 import createJWT from '../../../util/createJWT';
 import bcrypt from 'bcryptjs';
 import _ from 'lodash';
-import dotenv from 'dotenv';
-
-dotenv.config();
 
 export class LoginController {
 	static login = async (req: Request, res: Response, next: NextFunction) => {
