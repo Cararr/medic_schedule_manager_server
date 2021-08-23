@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { Employee } from '../source/domain/entities/Employee';
-import dotenv from 'dotenv';
 
+import dotenv from 'dotenv';
 dotenv.config();
 
 const createJWT = (

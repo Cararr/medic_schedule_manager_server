@@ -1,7 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { TOKEN_SECRET } from '../../../configs/config.json';
 import { UnauthorizedError } from 'routing-controllers';
+
+import dotenv from 'dotenv';
+dotenv.config();
 
 const validateToken = async (
 	req: Request,
@@ -10,7 +12,7 @@ const validateToken = async (
 ) => {
 	const token: string = req.cookies.token;
 	if (token) {
-		jwt.verify(token, TOKEN_SECRET, (error, decoded) => {
+		jwt.verify(token, process.env.TOKEN_SECRET, (error, decoded) => {
 			if (error)
 				return res.status(401).send({
 					message: error.message,
