@@ -2,4 +2,6 @@ node_modules
 dist
 requester.REST
 log
+DB_dump.pgsql
+DB_Schema.png
 .env

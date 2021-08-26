@@ -159,7 +159,9 @@ export class ScheduleController {
 
 	static generate = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			if (
+			// NIE DZIAŁA KIEDY W POPRZEDNI GRAFIK MA PRZEŁADOWANYCH PRACOWNIKÓW
+			
+			/* if (
 				typeof req.query.date !== 'string' ||
 				!validateDateFormat(req.query.date)
 			)
@@ -168,14 +170,14 @@ export class ScheduleController {
 			let date = new Date(req.query.date);
 			do {
 				date = new Date(date.setDate(date.getDate() - 1));
-			} while ([0, 6].includes(date.getDay()));
+			} while ([0, 6].includes(date.getDay())); */
 
-			const previousCells = await getRepository(ScheduleCell).find({
+
+			/* const previousCells = await getRepository(ScheduleCell).find({
 				relations: ['employeeAtCell', 'station'],
 				where: { date },
-			});
+			}); */
 
-			// NIE DZIAŁA KIEDY W POPRZEDNI GRAFIK MA PRZEŁADOWANYCH PRACOWNIKÓW
 
 			/* 	const previousMorningEmployees = previousCells
 				.filter(

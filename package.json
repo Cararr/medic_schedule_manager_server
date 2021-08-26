@@ -9,7 +9,7 @@
 		"nodemon": "nodemon dist/app.js",
 		"build": "tsc -p .",
 		"compile": "tsc -w -p .",
-		"pm2": "pm2 start dist/app.js && pm2 log",
+		"pm2": "pm2 start dist/app.js --name medic_schedule_manager_server && pm2 log",
 		"kill pm2": "pm2 delete default"
 	},
 	"author": "Cararr",
