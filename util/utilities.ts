@@ -24,7 +24,7 @@ export function incrementDateByDay(date: Date) {
 }
 
 export function formatDateString(date: Date) {
-	const dateArray = date.toLocaleDateString().split('.');
+	const dateArray = date.toLocaleDateString('pl-PL').split('.');
 	const day = Number(dateArray[0]) < 10 ? `0${dateArray[0]}` : dateArray[0];
 	return `${dateArray[2]}-${dateArray[1]}-${day}`;
 }
