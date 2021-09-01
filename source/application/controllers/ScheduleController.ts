@@ -3,7 +3,7 @@ import { getRepository } from 'typeorm';
 import { ScheduleCell } from '../../domain/entities/ScheduleCell';
 import { Station } from '../../domain/entities/Station';
 import { Employee } from '../../domain/entities/Employee';
-import { scheduleGenerator } from '../../domain/scheduleGenerator/scheduleGenerator';
+import { scheduleGenerator } from '../../infrastructure/scheduleGenerator/scheduleGenerator';
 import {
 	validateDateFormat,
 	incrementDateByDay,
@@ -160,7 +160,7 @@ export class ScheduleController {
 	static generate = async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			// NIE DZIAŁA KIEDY W POPRZEDNI GRAFIK MA PRZEŁADOWANYCH PRACOWNIKÓW
-			
+
 			/* if (
 				typeof req.query.date !== 'string' ||
 				!validateDateFormat(req.query.date)
@@ -172,12 +172,10 @@ export class ScheduleController {
 				date = new Date(date.setDate(date.getDate() - 1));
 			} while ([0, 6].includes(date.getDay())); */
 
-
 			/* const previousCells = await getRepository(ScheduleCell).find({
 				relations: ['employeeAtCell', 'station'],
 				where: { date },
 			}); */
-
 
 			/* 	const previousMorningEmployees = previousCells
 				.filter(

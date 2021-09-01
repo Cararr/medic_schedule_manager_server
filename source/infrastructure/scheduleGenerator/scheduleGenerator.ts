@@ -1,5 +1,5 @@
-import { Employee } from '../entities/Employee';
-import { Station } from '../entities/Station';
+import { Employee } from '../../domain/entities/Employee';
+import { Station } from '../../domain/entities/Station';
 import { dailySchedule, StationName } from '../../../typeDefs/types';
 import { ScheduleGeneratorEmployee, Shift } from './ScheduleGeneratorEmployee';
 import _ from 'lodash';
