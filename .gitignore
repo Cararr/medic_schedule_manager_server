@@ -3,5 +3,4 @@ dist
 requester.REST
 log
 dump.sql
-DB_Schema.png
 .env
