@@ -1,4 +1,5 @@
 <h1 align="center">Medic Schedule Manager - server</h1>
+
 <div align="center">
 
 <img  alt="Typescript" width="50px" src="https://iconape.com/wp-content/png_logo_vector/typescript.png" />
@@ -52,4 +53,4 @@ Application is running on [Amazon EC2](https://aws.amazon.com/ec2/?ec2-whats-new
 
 ---
 
-> _Visit my [Github](https://github.com/Cararr) account for more or contact me at cararr@tlen.pl!_
+> _Did you find this project interesting? Visit my [Github](https://github.com/Cararr) account or contact me at cararr@tlen.pl!_
