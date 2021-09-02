@@ -18,7 +18,7 @@
 
 </div>
 
-> <p align="center"> Technology stack used to build Medic Schedule Manager application. </p>
+> <p align="center"> Technology stack and tools used to build Medic Schedule Manager application. </p>
 
 &nbsp;
 
@@ -53,4 +53,4 @@ Application is running on [Amazon EC2](https://aws.amazon.com/ec2/?ec2-whats-new
 
 ---
 
-> _Did you find this project interesting? Visit my [Github](https://github.com/Cararr) account or contact me at cararr@tlen.pl!_
+> _Do you want to see more of my work? Visit my [Github](https://github.com/Cararr) account or contact me at cararr@tlen.pl!_
