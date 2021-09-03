@@ -53,4 +53,4 @@ Application is running on [Amazon EC2](https://aws.amazon.com/ec2/?ec2-whats-new
 
 ---
 
-> _Do you want to see more of my work? Visit my [Github](https://github.com/Cararr) account or contact me at cararr@tlen.pl!_
+> _Are you interested in this projects? Check out more of my work at my [Github](https://github.com/Cararr) account or contact me at cararr@tlen.pl!_
