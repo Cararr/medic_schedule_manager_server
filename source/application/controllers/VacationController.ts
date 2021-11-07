@@ -39,7 +39,7 @@ export class VacationController {
 
 			const vacation = vacationRepository.create(req.body.vacation);
 			await vacationRepository.save(vacation);
-			res.send({ message: 'Created.', vacation });
+			res.status(201).send({ message: 'Created.', vacation });
 		} catch (error) {
 			next(error);
 		}
