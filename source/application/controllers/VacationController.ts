@@ -63,7 +63,7 @@ export class VacationController {
 
 		if (
 			!req.body.employees.some(
-				(employee: Employee) => employee.id === req.body.vacation.employee.id
+				(employee: Employee) => employee.id === req.body.vacation.employee?.id
 			)
 		)
 			return res.status(400).send(new BadRequestError('Employee not exist.'));
